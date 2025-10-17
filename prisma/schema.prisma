@@ -13,14 +13,25 @@ enum UserRole {
 }
 
 model User {
-  ID_USER  String   @id @default(uuid())
-  USERNAME String   @unique
+  ID_USER  String    @id @default(uuid())
+  USERNAME String    @unique
   NAME     String
-  EMAIL    String   @unique
+  EMAIL    String    @unique
   PASSWORD String
-  ROLE     UserRole @default(USER)
-  DT_CR    DateTime @default(now())
-  DT_UP    DateTime @updatedAt
+  ROLE     UserRole  @default(USER)
+  DT_CR    DateTime  @default(now())
+  DT_UP    DateTime  @updatedAt
+  DEL_AT   DateTime?
 
   @@map("USER")
+}
+
+model Category {
+  ID_CT    String    @id @default(uuid())
+  CATEGORY String    @db.VarChar(45)
+  DT_CR    DateTime  @default(now())
+  DT_UP    DateTime  @updatedAt
+  DEL_AT   DateTime?
+
+  @@map("CATEGORIES")
 }
