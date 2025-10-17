@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
+import { InfraModule } from './infra/infra.module';
 
 @Module({
-  imports: [],
-  controllers: [],
-  providers: [],
+  imports: [InfraModule],
 })
 export class AppModule {}
