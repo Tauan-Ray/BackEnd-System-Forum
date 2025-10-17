@@ -23,7 +23,7 @@ model User {
   DT_UP    DateTime  @updatedAt
   DEL_AT   DateTime?
 
-  @@map("USER")
+  @@map("USERS")
 }
 
 model Category {
