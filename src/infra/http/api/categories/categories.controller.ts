@@ -16,7 +16,7 @@ export class CategoriesController {
         return await this.categoriesService.getAllCategories()
     }
 
-    @Get('/unique')
+    @Get('/find')
     async getCategoryById(@Query('id') id: string) {
         return await this.categoriesService.getCategoryById(id)
     }

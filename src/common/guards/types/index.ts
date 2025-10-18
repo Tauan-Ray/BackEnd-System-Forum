@@ -1,5 +1,12 @@
+export type userPayload = {
+    sub: string;
+    username: string;
+    role: string;
+    email: string;
+}
+
 export type jwtReponse = {
-    payload: { sub: string, username: string, role: string, email: string },
+    payload: userPayload,
     iat: number,
     exp: number,
 }
