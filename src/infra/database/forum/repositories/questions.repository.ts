@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaForumService } from "../prisma.forum.service";
-import type { userPayload } from "src/common/guards/types";
 import { Prisma } from "@prisma/client";
 import { CreateQuestionDto, FindManyQuestionsDto } from "src/infra/http/api/questions/dto";
 import { DefaultArgs } from "@prisma/client/runtime/library";

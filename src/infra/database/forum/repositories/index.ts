@@ -1,3 +1,4 @@
-export * from './user.repository'
+export * from './user.repository';
 export * from './category.repository';
 export * from './questions.repository';
+export * from './answers.repository';

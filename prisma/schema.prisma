@@ -12,17 +12,25 @@ enum UserRole {
   ADMIN
 }
 
+enum TypeVotes {
+  LIKE
+  DESLIKE
+}
+
 model User {
-  ID_USER  String     @id @default(uuid())
-  USERNAME String     @unique
+  ID_USER  String    @id @default(uuid())
+  USERNAME String    @unique
   NAME     String
-  EMAIL    String     @unique
+  EMAIL    String    @unique
   PASSWORD String
-  ROLE     UserRole   @default(USER)
-  DT_CR    DateTime   @default(now())
-  DT_UP    DateTime   @updatedAt
+  ROLE     UserRole  @default(USER)
+  DT_CR    DateTime  @default(now())
+  DT_UP    DateTime  @updatedAt
   DEL_AT   DateTime?
+
   Question Question[]
+  Answers  Answer[]
+  VOTES    Vote[]
 
   @@map("USERS")
 }
@@ -51,4 +59,40 @@ model Question {
 
   ID_USER String
   ID_CT   String
+  Answers Answer[]
+
+  @@map("QUESTIONS")
+}
+
+model Answer {
+  ID_AN    String    @id @default(uuid())
+  RESPONSE String    @db.Text
+  DT_CR    DateTime  @default(now())
+  DT_UP    DateTime  @updatedAt
+  DEL_AT   DateTime?
+
+  User     User     @relation(fields: [ID_USER], references: [ID_USER])
+  Question Question @relation(fields: [ID_QT], references: [ID_QT])
+
+  ID_USER String
+  ID_QT   String
+  VOTES   Vote[]
+
+  @@map("ANSWERS")
+}
+
+model Vote {
+  ID_VT String    @id @default(uuid())
+  TYPE  TypeVotes
+  DT_CR DateTime  @default(now())
+  DT_UP DateTime  @updatedAt
+
+  User   User   @relation(fields: [ID_USER], references: [ID_USER])
+  Answer Answer @relation(fields: [ID_AN], references: [ID_AN])
+
+  ID_USER String
+  ID_AN   String
+
+  @@unique([ID_USER, ID_AN])
+  @@map("VOTES")
 }
