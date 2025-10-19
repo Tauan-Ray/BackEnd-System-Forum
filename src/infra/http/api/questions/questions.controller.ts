@@ -5,6 +5,8 @@ import { GetCurrentUser } from "src/common/decorators/getCurrentUser.decorator";
 import type { userPayload } from "src/common/guards/types";
 import { CreateQuestionDto, FindManyQuestionsDto, GetIdParamDto } from "./dto";
 import { UpdateQuestionDto } from "./dto/update-question.dto";
+import { Throttle } from "@nestjs/throttler";
+import { ThrottlerConfigGuard } from "src/common/guards/throttler-config.guard";
 
 @Controller('questions')
 export class QuestionsController {
@@ -33,7 +35,8 @@ export class QuestionsController {
         return questions
     }
 
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtGuard, ThrottlerConfigGuard)
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Post('/create')
     async createQuestion(@GetCurrentUser('payload') user: userPayload, @Body() data: CreateQuestionDto) {
         const createdQuestion = await this.questionsService.createQuestion(user.sub, data)
@@ -41,16 +44,18 @@ export class QuestionsController {
         return createdQuestion;
     }
 
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtGuard, ThrottlerConfigGuard)
     @Patch('/update/:id')
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     async updateQuestion(@GetCurrentUser('payload') user: userPayload, @Param('id') id: GetIdParamDto, @Body() data: UpdateQuestionDto) {
         const updatedQuestion = await this.questionsService.updateQuestion(user, id.id, data)
 
         return updatedQuestion;
     }
 
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtGuard, ThrottlerConfigGuard)
     @Patch('/delete/:id')
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     async deleteQuestion(@GetCurrentUser('payload') user: userPayload, @Param('id') id: GetIdParamDto) {
         return await this.questionsService.deleteQuestion(id.id, user)
     }
