@@ -3,9 +3,6 @@ import { EncryptionModule } from './encryption/encryption.module';
 import { HttpModule } from './http/http.module';
 
 @Module({
-  imports: [
-    EncryptionModule,
-    HttpModule,
-  ]
+  imports: [EncryptionModule, HttpModule],
 })
-export class InfraModule { }
+export class InfraModule {}

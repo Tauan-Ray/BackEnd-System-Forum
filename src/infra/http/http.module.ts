@@ -4,6 +4,6 @@ import { AuthModule } from './auth/auth.module';
 import { ApiModule } from './api/api.module';
 
 @Module({
-  imports: [UserModule, AuthModule, ApiModule]
+  imports: [UserModule, AuthModule, ApiModule],
 })
-export class HttpModule { }
+export class HttpModule {}

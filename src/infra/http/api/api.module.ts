@@ -1,9 +1,9 @@
-import { Module } from "@nestjs/common";
-import { CategoriesModule } from "./categories/categories.module";
-import { QuestionsModule } from "./questions/questions.module";
-import { AnswersModule } from "./answers/answers.module";
+import { Module } from '@nestjs/common';
+import { CategoriesModule } from './categories/categories.module';
+import { QuestionsModule } from './questions/questions.module';
+import { AnswersModule } from './answers/answers.module';
 
 @Module({
-    imports: [CategoriesModule, QuestionsModule, AnswersModule]
+  imports: [CategoriesModule, QuestionsModule, AnswersModule],
 })
-export class ApiModule {} ;
+export class ApiModule {}

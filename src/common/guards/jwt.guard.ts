@@ -1,9 +1,4 @@
-import {
-  ExecutionContext,
-  Injectable,
-  CanActivate,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable, CanActivate, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { jwtReponse } from './types';
@@ -45,7 +40,7 @@ export class JwtGuard implements CanActivate {
 
     if (isRouteAdmin) {
       const user = await this.userService.findById(request['user'].payload.sub);
-      if (user?.ROLE !== 'ADMIN') return false
+      if (user?.ROLE !== 'ADMIN') return false;
     }
 
     return true;

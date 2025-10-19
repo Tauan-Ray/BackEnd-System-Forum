@@ -1,51 +1,55 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaCategoryRespotiory } from "src/infra/database/forum/repositories/category.repository";
-import { CreateCategoryDto } from "./dto";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaCategoryRespotiory } from 'src/infra/database/forum/repositories/category.repository';
+import { CreateCategoryDto } from './dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
-    constructor(private readonly categoryRepository: PrismaCategoryRespotiory) {}
+  constructor(private readonly categoryRepository: PrismaCategoryRespotiory) {}
 
-    async getAllCategories() {
-        const allCategories = await this.categoryRepository.getAllCategories();
+  async getAllCategories() {
+    const allCategories = await this.categoryRepository.getAllCategories();
 
-        return allCategories;
-    }
+    return allCategories;
+  }
 
-    async getCategoryById (id: string) {
-        const categoryById = await this.categoryRepository.getCategoryById(id);
+  async getCategoryById(id: string) {
+    const categoryById = await this.categoryRepository.getCategoryById(id);
 
-        return categoryById;
-    }
+    return categoryById;
+  }
 
-    async createCategory (createCategory: CreateCategoryDto) {
-        const categoryWithSameName = await this.categoryRepository.getCategoryByName(createCategory.name.trim());
-        if (categoryWithSameName) throw new ConflictException('Categoria com o mesmo nome já existente')
+  async createCategory(createCategory: CreateCategoryDto) {
+    const categoryWithSameName = await this.categoryRepository.getCategoryByName(
+      createCategory.name.trim(),
+    );
+    if (categoryWithSameName)
+      throw new ConflictException('Categoria com o mesmo nome já existente');
 
-        const createdCategory = await this.categoryRepository.createCategory(createCategory)
+    const createdCategory = await this.categoryRepository.createCategory(createCategory);
 
-        return createdCategory;
-    }
+    return createdCategory;
+  }
 
-    async updateCategory (id: string, data: UpdateCategoryDto) {
-        const existingCategory = this.getCategoryById(id)
-        if (!existingCategory) throw new NotFoundException('Categoria não existente')
+  async updateCategory(id: string, data: UpdateCategoryDto) {
+    const existingCategory = this.getCategoryById(id);
+    if (!existingCategory) throw new NotFoundException('Categoria não existente');
 
-        const categoryWithSameName = await this.categoryRepository.getCategoryByName(data.name);
-        if (categoryWithSameName) throw new ConflictException('Categoria com o mesmo nome já existente')
+    const categoryWithSameName = await this.categoryRepository.getCategoryByName(data.name);
+    if (categoryWithSameName)
+      throw new ConflictException('Categoria com o mesmo nome já existente');
 
-        const updatedCategory = await this.categoryRepository.updateCategory(id, data)
+    const updatedCategory = await this.categoryRepository.updateCategory(id, data);
 
-        return updatedCategory;
-    }
+    return updatedCategory;
+  }
 
-    async deleteCategory (id: string) {
-        const existingCategory = this.getCategoryById(id)
-        if (!existingCategory) throw new NotFoundException('Categoria não existente')
+  async deleteCategory(id: string) {
+    const existingCategory = this.getCategoryById(id);
+    if (!existingCategory) throw new NotFoundException('Categoria não existente');
 
-        await this.categoryRepository.deleteCategory(id);
+    await this.categoryRepository.deleteCategory(id);
 
-        return { message: 'Categoria deletada com sucesso' };
-    }
+    return { message: 'Categoria deletada com sucesso' };
+  }
 }
