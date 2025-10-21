@@ -1,13 +1,59 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, FindManyUserDto } from './dto';
+import { CreateUserDto, FindManyUserDto, FindUniqueUserDto, UpdatePasswordDto } from './dto';
+import { RouteAdmin } from 'src/common/decorators/admin.decorator';
+import { JwtGuard } from 'src/common/guards';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { GetCurrentUser } from 'src/common/decorators/getCurrentUser.decorator';
+import type { userPayload } from 'src/common/guards/types';
 
+@UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @HttpCode(HttpStatus.OK)
+  @Get('/all')
+  @RouteAdmin()
+  async findMany(@Query() query: FindManyUserDto) {
+    return await this.userService.findMany(query);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/find')
+  async findById(@Query('id') userId: string) {
+    if (!userId) throw new BadRequestException('Obrigatório enviar o id do usuário');
+    const user = await this.userService.findById(userId);
+
+    return user;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/unique')
+  async findByUsername(@Query() query: FindUniqueUserDto) {
+    const user = await this.userService.findUnique(query);
+
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+
+    return user;
+  }
+
+  @HttpCode(HttpStatus.OK)
   @Post('/create')
+  @RouteAdmin()
   async createUser(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.userService.createUser(createUserDto);
 
@@ -15,8 +61,28 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get('/all')
-  async findMany(@Query() query: FindManyUserDto) {
-    return await this.userService.findMany(query);
+  @Patch('update/:id')
+  async updateUser(
+    @GetCurrentUser('payload') user: userPayload,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.updateUser(user.sub, id, updateUserDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch('update/:id/password')
+  async updateUserPassword(
+    @GetCurrentUser('payload') user: userPayload,
+    @Param('id') id: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    return await this.userService.updatePassword(user.sub, id, updatePasswordDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch('delete/:id')
+  async deleteUser(@Param('id') userId: string) {
+    return await this.userService.deleteUser(userId);
   }
 }

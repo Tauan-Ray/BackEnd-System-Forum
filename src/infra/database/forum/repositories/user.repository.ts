@@ -1,9 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaForumService } from '../prisma.forum.service';
 import { Prisma } from '@prisma/client';
-import { CreateUserDto, FindManyUserDto } from 'src/infra/http/user/dto';
+import {
+  CreateUserDto,
+  FindManyUserDto,
+  FindUniqueUserDto,
+  UpdatePasswordDto,
+} from 'src/infra/http/user/dto';
 import { EncryptionService } from 'src/infra/encryption/encryption.service';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { UpdateUserDto } from 'src/infra/http/user/dto/update-user.dto';
 
 @Injectable()
 export class PrismaUserRepository {
@@ -12,18 +18,54 @@ export class PrismaUserRepository {
     private readonly encryption: EncryptionService,
   ) {}
 
-  async findUniqueUser(condition: Prisma.UserWhereInput) {
-    const find = await this.prismaService.user.findFirst({
-      where: { ...condition },
-    });
+  async findUniqueUser(condition: FindUniqueUserDto, returnPassword = false) {
+    if (!condition.email && !condition.username) {
+      throw new BadRequestException('Necessário enviar pelo menos um parâmetro (username/email)');
+    }
+
+    const filters: Prisma.UserWhereInput[] = [];
+
+    if (condition.email) {
+      filters.push({ EMAIL: condition.email });
+    }
+
+    if (condition.username) {
+      filters.push({ USERNAME: condition.username });
+    }
+
+    const qry: Prisma.UserFindFirstArgs = {
+      where: {
+        AND: filters,
+        DEL_AT: null,
+      },
+      select: {
+        ID_USER: true,
+        USERNAME: true,
+        NAME: true,
+        ROLE: true,
+        DT_CR: true,
+        PASSWORD: returnPassword,
+      },
+    };
+
+    const find = await this.prismaService.user.findFirst(qry);
 
     return find;
   }
 
-  async findById(userId: string) {
+  async findById(userId: string, returnPassword = false) {
     const find = await this.prismaService.user.findUnique({
       where: {
         ID_USER: userId,
+        DEL_AT: null,
+      },
+      select: {
+        ID_USER: true,
+        USERNAME: true,
+        NAME: true,
+        ROLE: true,
+        DT_CR: true,
+        PASSWORD: returnPassword,
       },
     });
 
@@ -34,6 +76,7 @@ export class PrismaUserRepository {
     const qry: Prisma.UserFindManyArgs<DefaultArgs> = {
       where: {
         ...args,
+        DEL_AT: null,
       },
       select: {
         ID_USER: true,
@@ -41,6 +84,7 @@ export class PrismaUserRepository {
         NAME: true,
         USERNAME: true,
         ROLE: true,
+        DEL_AT: true,
       },
       skip: page * limit,
       take: limit,
@@ -63,13 +107,6 @@ export class PrismaUserRepository {
   }
 
   async createUser(user: CreateUserDto) {
-    const existingUser = await this.findUniqueUser({
-      OR: [{ EMAIL: user.email }, { USERNAME: user.username }],
-    });
-    if (existingUser) {
-      throw new HttpException('Email ou usuário já registrado no sistema', HttpStatus.BAD_REQUEST);
-    }
-
     const hashedPassword = await this.encryption.hash(user.password);
 
     const newUser = await this.prismaService.user.create({
@@ -91,5 +128,55 @@ export class PrismaUserRepository {
         role: newUser.ROLE,
       },
     };
+  }
+
+  async updateUser(id: string, data: UpdateUserDto) {
+    const updatedUser = await this.prismaService.user.update({
+      where: { ID_USER: id },
+      data: {
+        ...(data.username && { USERNAME: data.username }),
+        ...(data.email && { EMAIL: data.email }),
+        ...(data.name && { NAME: data.name }),
+      },
+    });
+
+    return {
+      message: 'Usuário atualizado com sucesso',
+      data: {
+        id: updatedUser.ID_USER,
+        name: updatedUser.NAME,
+        email: updatedUser.EMAIL,
+        username: updatedUser.USERNAME,
+        role: updatedUser.ROLE,
+      },
+    };
+  }
+
+  async updatePassword(userId: string, password: UpdatePasswordDto) {
+    const existingUser = await this.findById(userId, true);
+
+    const passwordMatches = await this.encryption.compare(
+      password.actualPassword,
+      existingUser!.PASSWORD,
+    );
+    if (!passwordMatches) throw new UnauthorizedException('Senha atual incorreta!');
+
+    const hashedPassword = await this.encryption.hash(password.newPassword);
+
+    await this.prismaService.user.update({
+      where: { ID_USER: userId },
+      data: {
+        PASSWORD: hashedPassword,
+      },
+    });
+  }
+
+  async deleteUser(userId: string) {
+    await this.prismaService.user.update({
+      where: { ID_USER: userId },
+      data: {
+        DEL_AT: new Date(),
+      },
+    });
   }
 }
