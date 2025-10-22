@@ -28,6 +28,7 @@ export class PrismaCategoryRespotiory {
     const category = await this.prismaService.category.findUnique({
       where: {
         ID_CT: id,
+        DEL_AT: null,
       },
     });
 

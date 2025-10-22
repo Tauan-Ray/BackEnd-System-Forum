@@ -18,60 +18,6 @@ export class PrismaUserRepository {
     private readonly encryption: EncryptionService,
   ) {}
 
-  async findUniqueUser(condition: FindUniqueUserDto, returnPassword = false) {
-    if (!condition.email && !condition.username) {
-      throw new BadRequestException('Necessário enviar pelo menos um parâmetro (username/email)');
-    }
-
-    const filters: Prisma.UserWhereInput[] = [];
-
-    if (condition.email) {
-      filters.push({ EMAIL: condition.email });
-    }
-
-    if (condition.username) {
-      filters.push({ USERNAME: condition.username });
-    }
-
-    const qry: Prisma.UserFindFirstArgs = {
-      where: {
-        AND: filters,
-        DEL_AT: null,
-      },
-      select: {
-        ID_USER: true,
-        USERNAME: true,
-        NAME: true,
-        ROLE: true,
-        DT_CR: true,
-        PASSWORD: returnPassword,
-      },
-    };
-
-    const find = await this.prismaService.user.findFirst(qry);
-
-    return find;
-  }
-
-  async findById(userId: string, returnPassword = false) {
-    const find = await this.prismaService.user.findUnique({
-      where: {
-        ID_USER: userId,
-        DEL_AT: null,
-      },
-      select: {
-        ID_USER: true,
-        USERNAME: true,
-        NAME: true,
-        ROLE: true,
-        DT_CR: true,
-        PASSWORD: returnPassword,
-      },
-    });
-
-    return find;
-  }
-
   async findMany({ page = 0, limit = 10, ...args }: Prisma.UserWhereInput & FindManyUserDto) {
     const qry: Prisma.UserFindManyArgs<DefaultArgs> = {
       where: {
@@ -104,6 +50,57 @@ export class PrismaUserRepository {
         _total_page: Math.ceil(total / limit),
       },
     };
+  }
+
+  async findById(userId: string, returnPassword = false) {
+    const find = await this.prismaService.user.findUnique({
+      where: {
+        ID_USER: userId,
+        DEL_AT: null,
+      },
+      select: {
+        ID_USER: true,
+        USERNAME: true,
+        NAME: true,
+        ROLE: true,
+        DT_CR: true,
+        PASSWORD: returnPassword,
+      },
+    });
+
+    return find;
+  }
+
+  async findByUsernameOrEmail(condition: FindUniqueUserDto, returnPassword = false) {
+    const filters: Prisma.UserWhereInput[] = [];
+
+    if (condition.email) {
+      filters.push({ EMAIL: condition.email });
+    }
+
+    if (condition.username) {
+      filters.push({ USERNAME: condition.username });
+    }
+
+    const qry: Prisma.UserFindFirstArgs = {
+      where: {
+        AND: filters,
+        DEL_AT: null,
+      },
+      select: {
+        ID_USER: true,
+        USERNAME: true,
+        NAME: true,
+        EMAIL: true,
+        ROLE: true,
+        DT_CR: true,
+        PASSWORD: returnPassword,
+      },
+    };
+
+    const find = await this.prismaService.user.findFirst(qry);
+
+    return find;
   }
 
   async createUser(user: CreateUserDto) {
@@ -152,7 +149,7 @@ export class PrismaUserRepository {
     };
   }
 
-  async updatePassword(userId: string, password: UpdatePasswordDto) {
+  async updateUserPassword(userId: string, password: UpdatePasswordDto) {
     const existingUser = await this.findById(userId, true);
 
     const passwordMatches = await this.encryption.compare(

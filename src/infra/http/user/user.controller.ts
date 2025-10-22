@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -43,10 +42,8 @@ export class UserController {
 
   @HttpCode(HttpStatus.OK)
   @Get('/unique')
-  async findByUsername(@Query() query: FindUniqueUserDto) {
-    const user = await this.userService.findUnique(query);
-
-    if (!user) throw new NotFoundException('Usuário não encontrado');
+  async findByUsernameOrEmail(@Query() query: FindUniqueUserDto) {
+    const user = await this.userService.findByUsernameOrEmail(query);
 
     return user;
   }
@@ -67,7 +64,7 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.userService.updateUser(user.sub, id, updateUserDto);
+    return await this.userService.updateUser(user, id, updateUserDto);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -77,12 +74,12 @@ export class UserController {
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    return await this.userService.updatePassword(user.sub, id, updatePasswordDto);
+    return await this.userService.updateUserPassword(user, id, updatePasswordDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Patch('delete/:id')
-  async deleteUser(@Param('id') userId: string) {
-    return await this.userService.deleteUser(userId);
+  async deleteUser(@GetCurrentUser('payload') user: userPayload, @Param('id') userId: string) {
+    return await this.userService.deleteUser(user, userId);
   }
 }

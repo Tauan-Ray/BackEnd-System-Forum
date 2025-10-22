@@ -19,12 +19,12 @@ export class FindManyUserDto {
   NAME?: string;
 
   @IsOptional()
-  @Transform(({ value }) => Number(value) || null)
+  @Transform(({ value }) => (Number.isInteger(Number(value)) ? Number(value) : undefined))
   @IsInt()
   page?: number;
 
   @IsOptional()
-  @Transform(({ value }) => Number(value) || null)
+  @Transform(({ value }) => (Number.isInteger(Number(value)) ? Number(value) : undefined))
   @IsInt()
   limit?: number;
 }
