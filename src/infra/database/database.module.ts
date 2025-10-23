@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import {
   PrismaUserRepository,
   PrismaQuestionsRepository,
-  PrismaCategoryRespotiory,
+  PrismaCategoryRespository,
   PrismaAnswersRepository,
 } from './forum/repositories/index';
 import { PrismaForumService } from './forum/prisma.forum.service';
@@ -11,13 +11,13 @@ import { PrismaForumService } from './forum/prisma.forum.service';
   providers: [
     PrismaForumService,
     PrismaUserRepository,
-    PrismaCategoryRespotiory,
+    PrismaCategoryRespository,
     PrismaQuestionsRepository,
     PrismaAnswersRepository,
   ],
   exports: [
     PrismaUserRepository,
-    PrismaCategoryRespotiory,
+    PrismaCategoryRespository,
     PrismaQuestionsRepository,
     PrismaAnswersRepository,
   ],

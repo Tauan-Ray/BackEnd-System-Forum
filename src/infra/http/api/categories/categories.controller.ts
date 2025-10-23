@@ -4,6 +4,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { RouteAdmin } from 'src/common/decorators/admin.decorator';
+import { getCategoryIdDto } from './dto/get-category-id.dto';
 
 @UseGuards(JwtGuard)
 @RouteAdmin()
@@ -12,13 +13,13 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get('/all')
-  async getCategories() {
+  async getAllCategories() {
     return await this.categoriesService.getAllCategories();
   }
 
   @Get('/find')
-  async getCategoryById(@Query('id') id: string) {
-    return await this.categoriesService.getCategoryById(id);
+  async getCategoryById(@Query() categoryId: getCategoryIdDto) {
+    return await this.categoriesService.getCategoryById(categoryId.id);
   }
 
   @Post('/create')
@@ -27,12 +28,15 @@ export class CategoriesController {
   }
 
   @Patch('update/:id')
-  async updateCategory(@Param('id') id: string, @Body() updateCategory: UpdateCategoryDto) {
-    return await this.categoriesService.updateCategory(id, updateCategory);
+  async updateCategory(
+    @Param() categoryId: getCategoryIdDto,
+    @Body() updateCategory: UpdateCategoryDto,
+  ) {
+    return await this.categoriesService.updateCategory(categoryId.id, updateCategory);
   }
 
   @Patch('delete/:id')
-  async deleteCategory(@Param('id') id: string) {
-    return await this.categoriesService.deleteCategory(id);
+  async deleteCategory(@Param() categoryId: getCategoryIdDto) {
+    return await this.categoriesService.deleteCategory(categoryId.id);
   }
 }

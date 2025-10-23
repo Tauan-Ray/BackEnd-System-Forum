@@ -1,11 +1,11 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaCategoryRespotiory } from 'src/infra/database/forum/repositories/category.repository';
+import { PrismaCategoryRespository } from 'src/infra/database/forum/repositories/category.repository';
 import { CreateCategoryDto } from './dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly categoryRepository: PrismaCategoryRespotiory) {}
+  constructor(private readonly categoryRepository: PrismaCategoryRespository) {}
 
   async getAllCategories() {
     const allCategories = await this.categoryRepository.getAllCategories();
@@ -15,6 +15,8 @@ export class CategoriesService {
 
   async getCategoryById(id: string) {
     const categoryById = await this.categoryRepository.getCategoryById(id);
+
+    if (!categoryById) throw new NotFoundException('Categoria não existente');
 
     return categoryById;
   }
@@ -32,8 +34,7 @@ export class CategoriesService {
   }
 
   async updateCategory(id: string, data: UpdateCategoryDto) {
-    const existingCategory = this.getCategoryById(id);
-    if (!existingCategory) throw new NotFoundException('Categoria não existente');
+    await this.getCategoryById(id);
 
     const categoryWithSameName = await this.categoryRepository.getCategoryByName(data.name);
     if (categoryWithSameName)
@@ -45,8 +46,7 @@ export class CategoriesService {
   }
 
   async deleteCategory(id: string) {
-    const existingCategory = this.getCategoryById(id);
-    if (!existingCategory) throw new NotFoundException('Categoria não existente');
+    await this.getCategoryById(id);
 
     await this.categoryRepository.deleteCategory(id);
 

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { userPayload } from 'src/common/guards/types';
 import {
-  PrismaCategoryRespotiory,
+  PrismaCategoryRespository,
   PrismaQuestionsRepository,
   PrismaUserRepository,
 } from 'src/infra/database/forum/repositories';
@@ -12,7 +12,7 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 export class QuestionsService {
   constructor(
     private readonly questionsRepository: PrismaQuestionsRepository,
-    private readonly categoryRepository: PrismaCategoryRespotiory,
+    private readonly categoryRepository: PrismaCategoryRespository,
     private readonly userRepository: PrismaUserRepository,
   ) {}
 

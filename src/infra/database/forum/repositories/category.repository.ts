@@ -4,7 +4,7 @@ import { CreateCategoryDto } from 'src/infra/http/api/categories/dto';
 import { UpdateCategoryDto } from 'src/infra/http/api/categories/dto/update-category.dto';
 
 @Injectable()
-export class PrismaCategoryRespotiory {
+export class PrismaCategoryRespository {
   constructor(private readonly prismaService: PrismaForumService) {}
 
   async getAllCategories() {
@@ -42,7 +42,10 @@ export class PrismaCategoryRespotiory {
       },
     });
 
-    return createdCategory;
+    return {
+      message: 'Categoria criada com sucesso',
+      data: createdCategory,
+    };
   }
 
   async updateCategory(id: string, data: UpdateCategoryDto) {
@@ -55,7 +58,10 @@ export class PrismaCategoryRespotiory {
       },
     });
 
-    return updatedCategory;
+    return {
+      message: 'Categoria atualizada com sucesso',
+      data: updatedCategory,
+    };
   }
 
   async deleteCategory(id: string) {
