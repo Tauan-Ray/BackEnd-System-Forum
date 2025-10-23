@@ -38,6 +38,9 @@ export class JwtGuard implements CanActivate {
       throw new UnauthorizedException('Token de usuário expirado ou inválido');
     }
 
+    if (payload.type === 'refresh')
+      throw new UnauthorizedException('Obrigatório o uso do access_token para obter o acesso');
+
     if (isRouteAdmin) {
       const user = await this.userService.findById(request['user'].payload.sub);
       if (user?.ROLE !== 'ADMIN') return false;

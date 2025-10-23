@@ -15,10 +15,10 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const user = await this.userService.findByUsernameOrEmail({ email }, true);
 
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new UnauthorizedException('Email e/ou senha incorretos');
 
     const passwordMatches = await this.encryption.compare(password, user.PASSWORD);
-    if (!passwordMatches) throw new UnauthorizedException();
+    if (!passwordMatches) throw new UnauthorizedException('Email e/ou senha incorretos');
 
     const tokens = await this.getTokens({
       sub: user.ID_USER,
@@ -44,7 +44,7 @@ export class AuthService {
     return tokens;
   }
 
-  async refreshToken(rt: string) {
+  async getNewAccessToken(rt: string) {
     const rtCompare = this.jwtService.verifyAsync(rt, {
       secret: secret.JWT_SECRET_KEY,
     });
@@ -59,8 +59,8 @@ export class AuthService {
     });
 
     return {
-      refresh_token: token,
-      refresh_token_expiresIn: this.calculateExpireToken(60 * 60 * 24 * 7),
+      access_token: token.access_token,
+      access_token_expiresIn: token.access_token_expiresIn,
     };
   }
 
@@ -70,14 +70,14 @@ export class AuthService {
 
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(
-        { payload },
+        { payload, type: 'access' },
         {
           privateKey: secret.JWT_SECRET_KEY,
           expiresIn: access_token_expires,
         },
       ),
       this.jwtService.signAsync(
-        { sub: payload.sub, username: payload.username },
+        { sub: payload.sub, username: payload.username, type: 'refresh' },
         {
           privateKey: secret.JWT_SECRET_KEY,
           expiresIn: refresh_token_expires,

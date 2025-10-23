@@ -7,6 +7,7 @@ export type userPayload = {
 
 export type jwtReponse = {
   payload: userPayload;
+  type: string;
   iat: number;
   exp: number;
 };

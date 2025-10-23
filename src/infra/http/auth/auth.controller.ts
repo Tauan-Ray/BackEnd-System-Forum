@@ -22,9 +22,9 @@ export class AuthController {
     return await this.authService.signUp(signUpDto);
   }
 
-  @Post('/refresh')
+  @Post('/refresh-token')
   @HttpCode(HttpStatus.OK)
-  async refreshTokens(@Body() rt: { refresh_token: string }) {
-    return await this.authService.refreshToken(rt.refresh_token);
+  async getNewAccessToken(@Body() rt: { refresh_token: string }) {
+    return await this.authService.getNewAccessToken(rt.refresh_token);
   }
 }
