@@ -10,13 +10,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
-import { JwtGuard } from 'src/common/guards';
+import { JwtGuard, ThrottlerConfigGuard } from 'src/common/guards';
 import { GetCurrentUser } from 'src/common/decorators/getCurrentUser.decorator';
 import type { userPayload } from 'src/common/guards/types';
-import { CreateQuestionDto, FindManyQuestionsDto, GetIdParamDto } from './dto';
+import {
+  CreateQuestionDto,
+  FindManyQuestionsDto,
+  GetIdParamDto,
+  GetQuestionByUserDto,
+} from './dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { Throttle } from '@nestjs/throttler';
-import { ThrottlerConfigGuard } from 'src/common/guards/throttler-config.guard';
 
 @Controller('questions')
 export class QuestionsController {
@@ -30,17 +34,15 @@ export class QuestionsController {
   }
 
   @Get('/find')
-  async getQuestionById(@Query() query: { id_question: string }) {
-    if (!query.id_question) throw new BadRequestException('Necessário informar id da pergunta');
-    const question = await this.questionsService.getQuestionById(query.id_question);
+  async getQuestionById(@Query() query: GetIdParamDto) {
+    const question = await this.questionsService.getQuestionById(query.id);
 
     return question;
   }
 
-  @Get('/user/:id')
-  async getQuestionsByIdUser(@Param('id') idUser: GetIdParamDto) {
-    if (!idUser) throw new BadRequestException('Necessário informar id da resposta');
-    const questions = await this.questionsService.getQuestionsByUserId(idUser.id);
+  @Get('/user/')
+  async getQuestionsByIdUser(@Query() query: GetQuestionByUserDto) {
+    const questions = await this.questionsService.getQuestionsByIdUser(query);
 
     return questions;
   }
@@ -62,7 +64,7 @@ export class QuestionsController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async updateQuestion(
     @GetCurrentUser('payload') user: userPayload,
-    @Param('id') id: GetIdParamDto,
+    @Param() id: GetIdParamDto,
     @Body() data: UpdateQuestionDto,
   ) {
     const updatedQuestion = await this.questionsService.updateQuestion(user, id.id, data);
@@ -73,10 +75,7 @@ export class QuestionsController {
   @UseGuards(JwtGuard, ThrottlerConfigGuard)
   @Patch('/delete/:id')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async deleteQuestion(
-    @GetCurrentUser('payload') user: userPayload,
-    @Param('id') id: GetIdParamDto,
-  ) {
+  async deleteQuestion(@GetCurrentUser('payload') user: userPayload, @Param() id: GetIdParamDto) {
     return await this.questionsService.deleteQuestion(id.id, user);
   }
 }

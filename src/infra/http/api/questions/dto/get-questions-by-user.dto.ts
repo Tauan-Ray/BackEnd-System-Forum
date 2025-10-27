@@ -1,18 +1,10 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 
-export class FindManyQuestionsDto {
-  @IsUUID()
-  @IsOptional()
-  ID_QT?: string;
-
-  @IsString()
-  @IsOptional()
-  TITLE?: string;
-
-  @IsString()
-  @IsOptional()
-  DESCRIPTION?: string;
+export class GetQuestionByUserDto {
+  @IsUUID(undefined, { message: 'O id deve ser um UUID válido' })
+  @IsNotEmpty({ message: 'O campo de id não pode estar vazio' })
+  id: string;
 
   @IsOptional()
   @Transform(({ value }) => (Number.isInteger(Number(value)) ? Number(value) : undefined))

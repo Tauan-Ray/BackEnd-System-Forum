@@ -5,7 +5,7 @@ import {
   PrismaQuestionsRepository,
   PrismaUserRepository,
 } from 'src/infra/database/forum/repositories';
-import { CreateQuestionDto, FindManyQuestionsDto } from './dto';
+import { CreateQuestionDto, FindManyQuestionsDto, GetQuestionByUserDto } from './dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @Injectable()
@@ -32,11 +32,11 @@ export class QuestionsService {
     return questionById;
   }
 
-  async getQuestionsByUserId(idUser: string) {
-    const existingUser = await this.userRepository.findById(idUser);
+  async getQuestionsByIdUser(args: GetQuestionByUserDto) {
+    const existingUser = await this.userRepository.findById(args.id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
-    const questions = await this.questionsRepository.getQuestionsByidUser(idUser);
+    const questions = await this.questionsRepository.getQuestionsByIdUser(args);
 
     return questions;
   }
@@ -56,8 +56,6 @@ export class QuestionsService {
       const existingCategory = await this.categoryRepository.getCategoryById(data.ID_CT);
       if (!existingCategory) throw new NotFoundException('Categoria não encontrada');
     }
-
-    if (!existingQuestion) throw new NotFoundException('Pergunta não encontrada');
     if (existingQuestion.ID_USER !== user.sub && user.role !== 'ADMIN')
       throw new UnauthorizedException('Você não pode alterar uma pergunta de outra pessoa');
 
@@ -74,6 +72,6 @@ export class QuestionsService {
 
     await this.questionsRepository.deleteQuestion(idQuestion);
 
-    return { message: 'Pergunta deletada com sucesso!' };
+    return { message: 'Pergunta deletada com sucesso' };
   }
 }

@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaForumService } from '../prisma.forum.service';
 import { Prisma } from '@prisma/client';
-import { CreateQuestionDto, FindManyQuestionsDto } from 'src/infra/http/api/questions/dto';
+import {
+  CreateQuestionDto,
+  FindManyQuestionsDto,
+  GetQuestionByUserDto,
+} from 'src/infra/http/api/questions/dto';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { UpdateQuestionDto } from 'src/infra/http/api/questions/dto/update-question.dto';
 
@@ -88,10 +92,10 @@ export class PrismaQuestionsRepository {
     return question;
   }
 
-  async getQuestionsByidUser(idUser: string) {
-    const questions = await this.prismaService.question.findMany({
+  async getQuestionsByIdUser({ page = 0, limit = 10, id }: GetQuestionByUserDto) {
+    const qry: Prisma.QuestionFindManyArgs<DefaultArgs> = {
       where: {
-        ID_USER: idUser,
+        ID_USER: id,
       },
       select: {
         ID_QT: true,
@@ -104,9 +108,24 @@ export class PrismaQuestionsRepository {
         Category: { select: { CATEGORY: true } },
         User: { select: { USERNAME: true, ROLE: true } },
       },
-    });
+      skip: page * limit,
+      take: limit,
+      orderBy: {
+        DT_UP: 'desc',
+      },
+    };
+    const total = await this.prismaService.question.count({ where: qry.where });
+    const _data = await this.prismaService.question.findMany(qry);
 
-    return questions;
+    return {
+      _data,
+      _meta: {
+        _results: _data.length,
+        _total_results: total,
+        _page: page + 1,
+        _total_page: Math.ceil(total / limit),
+      },
+    };
   }
 
   async createQuestion(idUser: string, data: CreateQuestionDto) {
@@ -119,7 +138,10 @@ export class PrismaQuestionsRepository {
       },
     });
 
-    return createdQuestion;
+    return {
+      message: 'Pergunta criada com sucesso',
+      data: createdQuestion,
+    };
   }
 
   async updateQuestion(id: string, data: UpdateQuestionDto) {
@@ -134,7 +156,10 @@ export class PrismaQuestionsRepository {
       },
     });
 
-    return updatedQuestion;
+    return {
+      message: 'Pergunta editada com sucesso',
+      data: updatedQuestion,
+    };
   }
 
   async deleteQuestion(id: string) {

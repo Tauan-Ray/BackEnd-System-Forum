@@ -44,6 +44,6 @@ describe('CategoriesService - getAllCategories', () => {
     const result = await service.getAllCategories();
 
     expect(mockRepository.getAllCategories).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(result);
+    expect(result).toEqual(categories);
   });
 });
