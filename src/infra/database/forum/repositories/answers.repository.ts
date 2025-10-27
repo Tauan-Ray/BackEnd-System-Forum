@@ -63,9 +63,9 @@ export class PrismaAnswersRepository {
     return answer;
   }
 
-  async getAnswerByUser({ page = 0, limit = 10 }, idUser: string) {
+  async getAnswersByUser({ page = 0, limit = 10, id }) {
     const qry: Prisma.AnswerFindManyArgs<DefaultArgs> = {
-      where: { ID_USER: idUser, DEL_AT: null },
+      where: { ID_USER: id, DEL_AT: null },
       select: {
         ID_AN: true,
         ID_USER: true,
@@ -98,7 +98,7 @@ export class PrismaAnswersRepository {
     };
   }
 
-  async getAnswersByQuestion({ page = 0, limit = 10 }, idQuestion: string) {
+  async getAnswersByQuestion({ page = 0, limit = 10, id }) {
     const results = await this.prismaService.$queryRaw<
       Array<{
         ID_AN: string;
@@ -134,7 +134,7 @@ export class PrismaAnswersRepository {
             LEFT JOIN "VOTES" v ON
                 v."ID_AN" = a."ID_AN"
             WHERE
-                a."ID_QT" = ${idQuestion}
+                a."ID_QT" = ${id}
             GROUP BY
                 a."ID_AN",
                 u."USERNAME",
@@ -148,7 +148,7 @@ export class PrismaAnswersRepository {
         `;
 
     const total = await this.prismaService.answer.count({
-      where: { ID_QT: idQuestion, DEL_AT: null },
+      where: { ID_QT: id, DEL_AT: null },
     });
 
     return {
@@ -171,7 +171,10 @@ export class PrismaAnswersRepository {
       },
     });
 
-    return answer;
+    return {
+      message: 'Resposta criada com sucesso',
+      data: answer,
+    };
   }
 
   async updateAnswer(id: string, data: UpdateAnswerDto) {
@@ -182,7 +185,10 @@ export class PrismaAnswersRepository {
       },
     });
 
-    return updatedAnswer;
+    return {
+      message: 'Resposta atualizada com sucesso',
+      data: updatedAnswer,
+    };
   }
 
   async deleteAnswer(id: string) {
@@ -196,7 +202,7 @@ export class PrismaAnswersRepository {
     });
   }
 
-  async updateVote(idUser: string, idAnswer: string, type: TypeVotes) {
+  async updateVotes(idUser: string, idAnswer: string, type: TypeVotes) {
     const existingVote = await this.prismaService.vote.findUnique({
       where: {
         ID_USER_ID_AN: { ID_USER: idUser, ID_AN: idAnswer },

@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaUserRepository } from 'src/infra/database/forum/repositories/user.repository';
 import { PrismaForumService } from 'src/infra/database/forum/prisma.forum.service';
 import { EncryptionService } from 'src/infra/encryption/encryption.service';
-import { UnauthorizedException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
 describe('PrismaUserRepository', () => {

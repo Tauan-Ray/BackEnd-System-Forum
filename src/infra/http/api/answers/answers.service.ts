@@ -4,7 +4,13 @@ import {
   PrismaQuestionsRepository,
   PrismaUserRepository,
 } from 'src/infra/database/forum/repositories';
-import { CreateAnswerDto, FindManyAnswersDto, UpdateAnswerDto, UpdateVoteDto } from './dto';
+import {
+  CreateAnswerDto,
+  FindManyAnswersDto,
+  GetAnswersByResourceDto,
+  UpdateAnswerDto,
+  UpdateVoteDto,
+} from './dto';
 import { userPayload } from 'src/common/guards/types';
 
 @Injectable()
@@ -31,20 +37,20 @@ export class AnswersService {
     return answer;
   }
 
-  async getAnswersByUser(query: FindManyAnswersDto, idUser: string) {
-    const existingUser = await this.usersRepository.findById(idUser);
+  async getAnswersByUser(query: GetAnswersByResourceDto) {
+    const existingUser = await this.usersRepository.findById(query.id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
-    const answers = await this.answersRepository.getAnswerByUser(query, idUser);
+    const answers = await this.answersRepository.getAnswersByUser(query);
 
     return answers;
   }
 
-  async getAnswersByQuestion(query: FindManyAnswersDto, idQuestion: string) {
-    const existingQuestion = await this.questionsRepository.getQuestionById(idQuestion);
+  async getAnswersByQuestion(query: GetAnswersByResourceDto) {
+    const existingQuestion = await this.questionsRepository.getQuestionById(query.id);
     if (!existingQuestion) throw new NotFoundException('Pergunta não encontrada');
 
-    const answers = await this.answersRepository.getAnswersByQuestion(query, idQuestion);
+    const answers = await this.answersRepository.getAnswersByQuestion(query);
 
     return answers;
   }
@@ -58,7 +64,7 @@ export class AnswersService {
     return createdAnswer;
   }
 
-  async updateAnswer(user: userPayload, { id }, updateAnswer: UpdateAnswerDto) {
+  async updateAnswer(user: userPayload, id: string, updateAnswer: UpdateAnswerDto) {
     const existingAnswer = await this.getAnswerById(id);
     if (existingAnswer.ID_USER !== user.sub && user.role !== 'ADMIN')
       throw new UnauthorizedException('Você não pode alterar a respostas de um outro usuário');
@@ -68,7 +74,7 @@ export class AnswersService {
     return updatedAnswer;
   }
 
-  async deleteAnswer(user: userPayload, { id }) {
+  async deleteAnswer(user: userPayload, id: string) {
     const existingAnswer = await this.getAnswerById(id);
 
     if (existingAnswer.ID_USER !== user.sub && user.role !== 'ADMIN')
@@ -76,13 +82,13 @@ export class AnswersService {
 
     await this.answersRepository.deleteAnswer(id);
 
-    return { message: 'Resposta deletada com sucesso!' };
+    return { message: 'Resposta deletada com sucesso' };
   }
 
-  async updateVotes(user: userPayload, { id }, updateVote: UpdateVoteDto) {
+  async updateVotes(user: userPayload, id: string, updateVote: UpdateVoteDto) {
     await this.getAnswerById(id);
 
-    const updatedVote = await this.answersRepository.updateVote(user.sub, id, updateVote.type);
+    const updatedVote = await this.answersRepository.updateVotes(user.sub, id, updateVote.type);
 
     return updatedVote;
   }

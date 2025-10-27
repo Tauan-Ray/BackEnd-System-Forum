@@ -15,6 +15,7 @@ import type { userPayload } from 'src/common/guards/types';
 import {
   CreateAnswerDto,
   FindManyAnswersDto,
+  GetAnswersByResourceDto,
   GetIdParamDto,
   UpdateAnswerDto,
   UpdateVoteDto,
@@ -38,26 +39,22 @@ export class AnswersController {
   }
 
   @Get('/find')
-  async getAnswerById(@Query('id') id: string) {
-    if (!id) throw new BadRequestException('Necessário informar id da resposta');
-    const answer = await this.answersService.getAnswerById(id);
+  async getAnswerById(@Query() idAnswer: GetIdParamDto) {
+    const answer = await this.answersService.getAnswerById(idAnswer.id);
 
     return answer;
   }
 
-  @Get('/user/:id')
-  async getAnswerByUser(@Param() idUser: GetIdParamDto, @Query() query: FindManyAnswersDto) {
-    const answers = await this.answersService.getAnswersByUser(query, idUser.id);
+  @Get('/user/')
+  async getAnswersByUser(@Query() query: GetAnswersByResourceDto) {
+    const answers = await this.answersService.getAnswersByUser(query);
 
     return answers;
   }
 
-  @Get('/question/:id')
-  async getAnswerByQuestion(
-    @Param() idQuestion: GetIdParamDto,
-    @Query() query: FindManyAnswersDto,
-  ) {
-    const answers = await this.answersService.getAnswersByQuestion(query, idQuestion.id);
+  @Get('/question/')
+  async getAnswersByQuestion(@Query() query: GetAnswersByResourceDto) {
+    const answers = await this.answersService.getAnswersByQuestion(query);
 
     return answers;
   }
@@ -79,10 +76,10 @@ export class AnswersController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async updateAnswer(
     @GetCurrentUser('payload') user: userPayload,
-    @Param() id: GetIdParamDto,
+    @Param() answerId: GetIdParamDto,
     @Body() updateAnswer: UpdateAnswerDto,
   ) {
-    const updatedAnswer = await this.answersService.updateAnswer(user, id, updateAnswer);
+    const updatedAnswer = await this.answersService.updateAnswer(user, answerId.id, updateAnswer);
 
     return updatedAnswer;
   }
@@ -90,20 +87,22 @@ export class AnswersController {
   @UseGuards(JwtGuard, ThrottlerConfigGuard)
   @Patch('delete/:id')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async deleteAnswer(@GetCurrentUser('payload') user: userPayload, @Param() id: GetIdParamDto) {
-    return await this.answersService.deleteAnswer(user, id);
+  async deleteAnswer(
+    @GetCurrentUser('payload') user: userPayload,
+    @Param() answerId: GetIdParamDto,
+  ) {
+    return await this.answersService.deleteAnswer(user, answerId.id);
   }
 
   @UseGuards(JwtGuard, ThrottlerConfigGuard)
   @Patch('/:id/vote')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async updateVote(
+  async updateVotes(
     @GetCurrentUser('payload') user: userPayload,
-    @Param() id: GetIdParamDto,
+    @Param() answerId: GetIdParamDto,
     @Body() updateVote: UpdateVoteDto,
   ) {
-    if (!id) throw new BadRequestException('Necessário informar id da resposta');
-    const updatedVotes = await this.answersService.updateVotes(user, id, updateVote);
+    const updatedVotes = await this.answersService.updateVotes(user, answerId.id, updateVote);
 
     return updatedVotes;
   }
