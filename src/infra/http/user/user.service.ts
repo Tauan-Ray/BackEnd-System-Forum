@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -46,7 +47,7 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new HttpException('Email ou usuário já registrado no sistema', HttpStatus.BAD_REQUEST);
+      throw new ConflictException('Email ou usuário já registrado no sistema');
     }
 
     const newUser = await this.prismaUserRepository.createUser(createUserDto);
@@ -57,6 +58,13 @@ export class UserService {
   async updateUser(user: userPayload, id: string, data: UpdateUserDto) {
     const existingUser = await this.prismaUserRepository.findById(id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
+
+    const searchByUsernameOrEmail = await this.findByUsernameOrEmail({
+      email: data.email,
+      username: data.username,
+    });
+
+    if (searchByUsernameOrEmail) throw new ConflictException('Email ou username em uso');
 
     if (user.sub !== id && user.role !== 'ADMIN')
       throw new UnauthorizedException('Você não pode alterar o usuário de outra pessoa');
@@ -78,14 +86,14 @@ export class UserService {
     return { message: 'Senha atualizada com sucesso' };
   }
 
-  async deleteUser(user: userPayload, id: string) {
+  async deleteUser(user: userPayload, id: string, password: string) {
     const existingUser = await this.prismaUserRepository.findById(id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
     if (id !== user.sub && user.role !== 'ADMIN')
       throw new UnauthorizedException('Você não pode deletar o usuário de outra pessoa!');
 
-    await this.prismaUserRepository.deleteUser(id);
+    await this.prismaUserRepository.deleteUser(id, password);
 
     return { message: 'Usuário deletado com sucesso' };
   }

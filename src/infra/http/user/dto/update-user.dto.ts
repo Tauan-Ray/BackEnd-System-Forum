@@ -20,4 +20,13 @@ export class UpdateUserDto {
   @IsEmail({}, { message: 'Insira um email em formato válido' })
   @IsOptional()
   email: string;
+
+  @ApiProperty({
+    example: 'actualPassword',
+    description: 'Senha atual do usuário para confirmar alterações',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Length(8, 20, { message: 'Senha atual deve conter no minímo 8 caracteres e no máximo 20' })
+  actualPassword: string;
 }

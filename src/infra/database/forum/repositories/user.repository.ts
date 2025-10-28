@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaForumService } from '../prisma.forum.service';
 import { Prisma } from '@prisma/client';
 import {
@@ -60,10 +60,11 @@ export class PrismaUserRepository {
       },
       select: {
         ID_USER: true,
-        USERNAME: true,
+        EMAIL: true,
         NAME: true,
+        USERNAME: true,
         ROLE: true,
-        DT_CR: true,
+        DEL_AT: true,
         PASSWORD: returnPassword,
       },
     });
@@ -84,16 +85,16 @@ export class PrismaUserRepository {
 
     const qry: Prisma.UserFindFirstArgs = {
       where: {
-        AND: filters,
+        OR: filters,
         DEL_AT: null,
       },
       select: {
         ID_USER: true,
-        USERNAME: true,
-        NAME: true,
         EMAIL: true,
+        NAME: true,
+        USERNAME: true,
         ROLE: true,
-        DT_CR: true,
+        DEL_AT: true,
         PASSWORD: returnPassword,
       },
     };
@@ -128,6 +129,13 @@ export class PrismaUserRepository {
   }
 
   async updateUser(id: string, data: UpdateUserDto) {
+    const existingUser = await this.findById(id, true);
+
+    const passwordMatches = await this.encryption.compare(
+      data.actualPassword,
+      existingUser!.PASSWORD,
+    );
+    if (!passwordMatches) throw new ForbiddenException('Senha atual incorreta!');
     const updatedUser = await this.prismaService.user.update({
       where: { ID_USER: id },
       data: {
@@ -156,7 +164,7 @@ export class PrismaUserRepository {
       password.actualPassword,
       existingUser!.PASSWORD,
     );
-    if (!passwordMatches) throw new UnauthorizedException('Senha atual incorreta!');
+    if (!passwordMatches) throw new ForbiddenException('Senha atual incorreta!');
 
     const hashedPassword = await this.encryption.hash(password.newPassword);
 
@@ -168,7 +176,12 @@ export class PrismaUserRepository {
     });
   }
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string, password: string) {
+    const existingUser = await this.findById(userId, true);
+
+    const passwordMatches = await this.encryption.compare(password, existingUser!.PASSWORD);
+    if (!passwordMatches) throw new ForbiddenException('Senha atual incorreta!');
+
     await this.prismaService.user.update({
       where: { ID_USER: userId },
       data: {
