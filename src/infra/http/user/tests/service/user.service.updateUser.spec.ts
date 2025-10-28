@@ -3,7 +3,8 @@ import { UserService } from '../../user.service';
 import { PrismaUserRepository } from 'src/infra/database/forum/repositories';
 import { randomUUID } from 'node:crypto';
 import { generateUpdatedPayload, generateUpdatedUser } from '../util/GeneratorUser.util';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UserRole } from '@prisma/client';
 
 describe('UserService - updateUser', () => {
   let service: UserService;
@@ -43,6 +44,7 @@ describe('UserService - updateUser', () => {
       username: 'TauanDev',
       name: 'Tauan-Ray',
       email: 'tauan@example.com',
+      actualPassword: 'password',
     });
 
     mockRepository.findById.mockResolvedValueOnce(null);
@@ -57,6 +59,65 @@ describe('UserService - updateUser', () => {
 
     expect(mockRepository.findById).toHaveBeenCalledTimes(1);
     expect(mockRepository.findById).toHaveBeenCalledWith(uuid);
+  });
+
+  it('should throw ConflictException if username or email exists', async () => {
+    const uuid = randomUUID();
+    const loggedUser = generateUpdatedPayload({
+      sub: uuid,
+      email: 'tauan@example.com',
+      username: '_tauankk',
+      role: 'USER',
+    });
+
+    const userByUsernameOrEmail = {
+      ID_USER: randomUUID(),
+      USERNAME: 'TauanDev',
+      NAME: 'Tauan admin',
+      EMAIL: 'tauan@example.com',
+      ROLE: UserRole.ADMIN,
+      PASSWORD: 'password_hash',
+      DT_CR: new Date(),
+      DT_UP: new Date(),
+      DEL_AT: null,
+    };
+
+    const userModel = {
+      ID_USER: randomUUID(),
+      USERNAME: 'Malu',
+      NAME: 'Maria-Luísa',
+      EMAIL: 'luisa@example.com',
+      ROLE: 'USER',
+      DT_CR: new Date(),
+    };
+
+    const dataUpdateUser = generateUpdatedUser({
+      username: 'TauanDev',
+      name: 'Tauan-Ray',
+      email: 'tauan@example.com',
+      actualPassword: 'password',
+    });
+
+    const getByUsernameOrEmail = jest.spyOn(service, 'findByUsernameOrEmail');
+    getByUsernameOrEmail.mockResolvedValue(userByUsernameOrEmail);
+
+    mockRepository.findById.mockResolvedValueOnce(userModel);
+
+    try {
+      await service.updateUser(loggedUser, uuid, dataUpdateUser);
+      throw new Error('error');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConflictException);
+      expect(error.message).toBe('Email ou username em uso');
+    }
+
+    expect(mockRepository.findById).toHaveBeenCalledTimes(1);
+    expect(mockRepository.findById).toHaveBeenCalledWith(uuid);
+    expect(getByUsernameOrEmail).toHaveBeenCalledTimes(1);
+    expect(getByUsernameOrEmail).toHaveBeenCalledWith({
+      email: dataUpdateUser.email,
+      username: dataUpdateUser.username,
+    });
   });
 
   it('should throw UnauthorizedException if not is the same user', async () => {
@@ -83,7 +144,11 @@ describe('UserService - updateUser', () => {
       username: 'TauanDev',
       name: 'Tauan-Ray',
       email: 'tauan@example.com',
+      actualPassword: 'password',
     });
+
+    const getByUsernameOrEmail = jest.spyOn(service, 'findByUsernameOrEmail');
+    getByUsernameOrEmail.mockResolvedValue(null);
 
     mockRepository.findById.mockResolvedValueOnce(userModel);
 
@@ -97,6 +162,11 @@ describe('UserService - updateUser', () => {
 
     expect(mockRepository.findById).toHaveBeenCalledTimes(1);
     expect(mockRepository.findById).toHaveBeenCalledWith(otherId);
+    expect(getByUsernameOrEmail).toHaveBeenCalledTimes(1);
+    expect(getByUsernameOrEmail).toHaveBeenCalledWith({
+      email: dataUpdateUser.email,
+      username: dataUpdateUser.username,
+    });
   });
 
   it('should update user with correct data', async () => {
@@ -122,6 +192,7 @@ describe('UserService - updateUser', () => {
       username: 'Maluzitos',
       name: 'Luísa',
       email: 'luisaa@example.com',
+      actualPassword: 'password',
     });
 
     const updatedUser = {
@@ -133,6 +204,9 @@ describe('UserService - updateUser', () => {
       },
     };
 
+    const getByUsernameOrEmail = jest.spyOn(service, 'findByUsernameOrEmail');
+    getByUsernameOrEmail.mockResolvedValue(null);
+
     mockRepository.findById.mockResolvedValueOnce(userModel);
     mockRepository.updateUser.mockResolvedValueOnce(updatedUser);
 
@@ -143,6 +217,12 @@ describe('UserService - updateUser', () => {
 
     expect(mockRepository.updateUser).toHaveBeenCalledTimes(1);
     expect(mockRepository.updateUser).toHaveBeenCalledWith(uuid, dataUpdateUser);
+
+    expect(getByUsernameOrEmail).toHaveBeenCalledTimes(1);
+    expect(getByUsernameOrEmail).toHaveBeenCalledWith({
+      email: dataUpdateUser.email,
+      username: dataUpdateUser.username,
+    });
 
     expect(result).toEqual(updatedUser);
     expect(result.data.username).toBe(dataUpdateUser.username);
@@ -166,13 +246,13 @@ describe('UserService - updateUser', () => {
       NAME: 'Maria-Luísa',
       EMAIL: 'luisa@example.com',
       ROLE: 'USER',
-      DT_CR: new Date(),
     };
 
     const dataUpdateUser = generateUpdatedUser({
       username: 'TauanDev',
       name: 'Tauan-Ray',
       email: 'tauan@example.com',
+      actualPassword: 'password',
     });
 
     const updatedUser = {
@@ -186,6 +266,9 @@ describe('UserService - updateUser', () => {
 
     mockRepository.findById.mockResolvedValueOnce(userModel);
 
+    const getByUsernameOrEmail = jest.spyOn(service, 'findByUsernameOrEmail');
+    getByUsernameOrEmail.mockResolvedValue(null);
+
     mockRepository.updateUser.mockResolvedValueOnce(updatedUser);
 
     const result = await service.updateUser(loggedUser, userModel.ID_USER, dataUpdateUser);
@@ -195,6 +278,12 @@ describe('UserService - updateUser', () => {
 
     expect(mockRepository.updateUser).toHaveBeenCalledTimes(1);
     expect(mockRepository.updateUser).toHaveBeenCalledWith(otherId, dataUpdateUser);
+
+    expect(getByUsernameOrEmail).toHaveBeenCalledTimes(1);
+    expect(getByUsernameOrEmail).toHaveBeenCalledWith({
+      email: dataUpdateUser.email,
+      username: dataUpdateUser.username,
+    });
 
     expect(result).toEqual(updatedUser);
     expect(result.data.username).toBe(dataUpdateUser.username);

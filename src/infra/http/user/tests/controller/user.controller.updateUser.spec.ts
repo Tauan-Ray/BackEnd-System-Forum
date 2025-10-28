@@ -5,7 +5,7 @@ import { JwtGuard } from 'src/common/guards';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { generateUpdatedPayload, generateUpdatedUser } from '../util/GeneratorUser.util';
-import { getUserDto } from '../../dto';
+import { GetIdParamDto } from '../../dto';
 import { UpdateUserDto } from '../../dto/update-user.dto';
 import { randomUUID } from 'crypto';
 
@@ -54,19 +54,71 @@ describe('UserController - updateUser', () => {
       name: 'Tauan Ray',
       email: 'tauan@example.com',
       username: 'TauanKk',
+      actualPassword: 'password',
     });
 
     const dto = plainToInstance(UpdateUserDto, updateUserData);
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
 
-    const dtoId = plainToInstance(getUserDto, { userId: loggedUser.sub });
+    const dtoId = plainToInstance(GetIdParamDto, { id: loggedUser.sub });
     const errorsId = await validate(dtoId);
     expect(errorsId.length).toBe(0);
 
-    await controller.updateUser(loggedUser, loggedUser.sub, updateUserData);
+    await controller.updateUser(loggedUser, { id: loggedUser.sub }, updateUserData);
 
     expect(mockService.updateUser).toHaveBeenCalledTimes(1);
     expect(mockService.updateUser).toHaveBeenCalledWith(loggedUser, loggedUser.sub, updateUserData);
+  });
+
+  it('should throw error in DTO if ID is missing', async () => {
+    const uuid = randomUUID();
+    const loggedUser = generateUpdatedPayload({
+      sub: uuid,
+      username: '_tauankk',
+      email: 'tauan@example.com',
+      role: 'USER',
+    });
+
+    const updateUserData = generateUpdatedUser({
+      name: 'Tauan Ray',
+      email: 'tauan@example.com',
+      username: 'TauanKk',
+      actualPassword: 'password',
+    });
+    const dto = plainToInstance(GetIdParamDto, { id: '' });
+    const errors = await validate(dto);
+    const messages = errors.map((e) => Object.values(e.constraints || {})).flat();
+
+    await controller.updateUser(loggedUser, { id: '' }, updateUserData);
+
+    expect(errors.length).toBeGreaterThan(0);
+    expect(messages).toContain('O id deve ser um UUID válido');
+    expect(messages).toContain('O campo de id não pode estar vazio');
+  });
+
+  it('should throw error in DTO if ID is not a UUID', async () => {
+    const uuid = randomUUID();
+    const loggedUser = generateUpdatedPayload({
+      sub: uuid,
+      username: '_tauankk',
+      email: 'tauan@example.com',
+      role: 'USER',
+    });
+
+    const updateUserData = generateUpdatedUser({
+      name: 'Tauan Ray',
+      email: 'tauan@example.com',
+      username: 'TauanKk',
+      actualPassword: 'password',
+    });
+    const dto = plainToInstance(GetIdParamDto, { id: 'invalid-id' });
+    const errors = await validate(dto);
+    const messages = errors.map((e) => Object.values(e.constraints || {})).flat();
+
+    await controller.updateUser(loggedUser, { id: 'invalid-id' }, updateUserData);
+
+    expect(errors.length).toBeGreaterThan(0);
+    expect(messages).toContain('O id deve ser um UUID válido');
   });
 });

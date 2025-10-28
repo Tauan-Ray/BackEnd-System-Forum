@@ -5,7 +5,7 @@ import { JwtGuard } from 'src/common/guards';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { generateUpdatedPayload } from '../util/GeneratorUser.util';
-import { getUserDto } from '../../dto';
+import { GetIdParamDto } from '../../dto';
 import { randomUUID } from 'crypto';
 
 describe('UserController - deleteUser', () => {
@@ -49,13 +49,13 @@ describe('UserController - deleteUser', () => {
       role: 'USER',
     });
 
-    const dtoId = plainToInstance(getUserDto, { userId: loggedUser.sub });
+    const dtoId = plainToInstance(GetIdParamDto, { id: loggedUser.sub });
     const errorsId = await validate(dtoId);
     expect(errorsId.length).toBe(0);
 
-    await controller.deleteUser(loggedUser, loggedUser.sub);
+    await controller.deleteUser(loggedUser, { id: loggedUser.sub }, { actualPassword: 'password' });
 
     expect(mockService.deleteUser).toHaveBeenCalledTimes(1);
-    expect(mockService.deleteUser).toHaveBeenCalledWith(loggedUser, loggedUser.sub);
+    expect(mockService.deleteUser).toHaveBeenCalledWith(loggedUser, loggedUser.sub, 'password');
   });
 });

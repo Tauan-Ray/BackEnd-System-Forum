@@ -4,6 +4,9 @@ import { UserService } from '../../user.service';
 import { JwtGuard } from 'src/common/guards';
 import { BadRequestException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { plainToInstance } from 'class-transformer';
+import { GetIdParamDto } from '../../dto';
+import { validate } from 'class-validator';
 
 describe('UserController - findById', () => {
   let controller: UserController;
@@ -39,13 +42,32 @@ describe('UserController - findById', () => {
 
   it('should call service when userId is provided', async () => {
     const uuid = randomUUID();
-    await controller.findById(uuid);
+    await controller.findById({ id: uuid });
 
     expect(mockService.findById).toHaveBeenCalledTimes(1);
     expect(mockService.findById).toHaveBeenCalledWith(uuid);
   });
 
-  it('should throw BadRequestException if id is missing', async () => {
-    await expect(controller.findById(undefined as any)).rejects.toThrow(BadRequestException);
+  it('should throw error in DTO if ID is missing', async () => {
+    const dto = plainToInstance(GetIdParamDto, { id: '' });
+    const errors = await validate(dto);
+    const messages = errors.map((e) => Object.values(e.constraints || {})).flat();
+
+    await controller.findById({ id: '' });
+
+    expect(errors.length).toBeGreaterThan(0);
+    expect(messages).toContain('O id deve ser um UUID válido');
+    expect(messages).toContain('O campo de id não pode estar vazio');
+  });
+
+  it('should throw error in DTO if ID is not a UUID', async () => {
+    const dto = plainToInstance(GetIdParamDto, { id: 'invalid_id' });
+    const errors = await validate(dto);
+    const messages = errors.map((e) => Object.values(e.constraints || {})).flat();
+
+    await controller.findById({ id: 'invalid_id' });
+
+    expect(errors.length).toBeGreaterThan(0);
+    expect(messages).toContain('O id deve ser um UUID válido');
   });
 });

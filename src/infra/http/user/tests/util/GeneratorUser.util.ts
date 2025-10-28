@@ -18,6 +18,7 @@ export function generateUpdatedUser(user: UpdateUserDto) {
     name: user.name,
     email: user.email,
     username: user.username,
+    actualPassword: user.actualPassword,
   };
 
   return updatedUser;

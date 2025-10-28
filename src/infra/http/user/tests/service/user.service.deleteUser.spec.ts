@@ -41,7 +41,7 @@ describe('UserService - deleteUser', () => {
     mockRepository.findById.mockResolvedValueOnce(null);
 
     try {
-      await service.deleteUser(loggedUser, uuid);
+      await service.deleteUser(loggedUser, uuid, 'password');
       throw new Error('error');
     } catch (error) {
       expect(error).toBeInstanceOf(NotFoundException);
@@ -75,7 +75,7 @@ describe('UserService - deleteUser', () => {
     mockRepository.findById.mockResolvedValueOnce(userModel);
 
     try {
-      await service.deleteUser(loggedUser, userModel.ID_USER);
+      await service.deleteUser(loggedUser, userModel.ID_USER, 'password');
       throw new Error('error');
     } catch (error) {
       expect(error).toBeInstanceOf(UnauthorizedException);
@@ -112,13 +112,13 @@ describe('UserService - deleteUser', () => {
     mockRepository.findById.mockResolvedValueOnce(userModel);
     mockRepository.deleteUser.mockResolvedValueOnce(responseDeleteUser);
 
-    const result = await service.deleteUser(loggedUser, uuid);
+    const result = await service.deleteUser(loggedUser, uuid, 'password');
 
     expect(mockRepository.findById).toHaveBeenCalledTimes(1);
     expect(mockRepository.findById).toHaveBeenCalledWith(uuid);
 
     expect(mockRepository.deleteUser).toHaveBeenCalledTimes(1);
-    expect(mockRepository.deleteUser).toHaveBeenCalledWith(uuid);
+    expect(mockRepository.deleteUser).toHaveBeenCalledWith(uuid, 'password');
 
     expect(result).toEqual(responseDeleteUser);
     expect(result.message).toBe('Usuário deletado com sucesso');
@@ -152,13 +152,13 @@ describe('UserService - deleteUser', () => {
 
     mockRepository.deleteUser.mockResolvedValueOnce(updatedUser);
 
-    const result = await service.deleteUser(loggedUser, userModel.ID_USER);
+    const result = await service.deleteUser(loggedUser, userModel.ID_USER, 'password');
 
     expect(mockRepository.findById).toHaveBeenCalledTimes(1);
     expect(mockRepository.findById).toHaveBeenCalledWith(otherId);
 
     expect(mockRepository.deleteUser).toHaveBeenCalledTimes(1);
-    expect(mockRepository.deleteUser).toHaveBeenCalledWith(otherId);
+    expect(mockRepository.deleteUser).toHaveBeenCalledWith(otherId, 'password');
 
     expect(result).toEqual(updatedUser);
     expect(result.message).toBe('Usuário deletado com sucesso');
