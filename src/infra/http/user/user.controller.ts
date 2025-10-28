@@ -1,85 +1,104 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, FindManyUserDto, FindUniqueUserDto, UpdatePasswordDto } from './dto';
 import { RouteAdmin } from 'src/common/decorators/admin.decorator';
 import { JwtGuard } from 'src/common/guards';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCurrentUser } from 'src/common/decorators/getCurrentUser.decorator';
 import type { userPayload } from 'src/common/guards/types';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiForbiddenResponse } from 'src/common/decorators/swagger/api-forbiddenResponse.decorator';
+import {
+  CreateUserDto,
+  DeleteUserDto,
+  FindManyUserDto,
+  FindUniqueUserDto,
+  GetIdParamDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
+} from './dto';
+import {
+  ApiCreateUser,
+  ApiDeleteUser,
+  ApiFindByIdUser,
+  ApiFindByUsernameOrEmail,
+  ApiFindManyUsers,
+  ApiUpdateUser,
+  ApiUpdateUserPassword,
+} from 'src/common/decorators/swagger/users';
 
+@ApiTags('User')
+@ApiBearerAuth()
+@ApiResponse({ status: 500, description: 'Erro interno no servidor' })
 @UseGuards(JwtGuard)
 @Controller('user')
+@RouteAdmin()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @HttpCode(HttpStatus.OK)
   @Get('/all')
   @RouteAdmin()
+  @ApiFindManyUsers()
+  @ApiForbiddenResponse()
   async findMany(@Query() query: FindManyUserDto) {
     return await this.userService.findMany(query);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Get('/find')
-  async findById(@Query('id') userId: string) {
-    if (!userId) throw new BadRequestException('Obrigatório enviar o id do usuário');
-    const user = await this.userService.findById(userId);
+  @RouteAdmin()
+  @ApiFindByIdUser()
+  @ApiForbiddenResponse()
+  async findById(@Query() userId: GetIdParamDto) {
+    const user = await this.userService.findById(userId.id);
 
     return user;
   }
 
-  @HttpCode(HttpStatus.OK)
   @Get('/unique')
+  @RouteAdmin()
+  @ApiFindByUsernameOrEmail()
+  @ApiForbiddenResponse()
   async findByUsernameOrEmail(@Query() query: FindUniqueUserDto) {
     const user = await this.userService.findByUsernameOrEmail(query);
 
     return user;
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('/create')
   @RouteAdmin()
+  @ApiCreateUser()
+  @ApiForbiddenResponse()
   async createUser(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.userService.createUser(createUserDto);
 
     return newUser;
   }
 
-  @HttpCode(HttpStatus.OK)
   @Patch('update/:id')
+  @ApiUpdateUser()
   async updateUser(
     @GetCurrentUser('payload') user: userPayload,
-    @Param('id') id: string,
+    @Param() idUser: GetIdParamDto,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.userService.updateUser(user, id, updateUserDto);
+    return await this.userService.updateUser(user, idUser.id, updateUserDto);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Patch('update/:id/password')
+  @ApiUpdateUserPassword()
   async updateUserPassword(
     @GetCurrentUser('payload') user: userPayload,
-    @Param('id') id: string,
+    @Param() userId: GetIdParamDto,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    return await this.userService.updateUserPassword(user, id, updatePasswordDto);
+    return await this.userService.updateUserPassword(user, userId.id, updatePasswordDto);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Patch('delete/:id')
-  async deleteUser(@GetCurrentUser('payload') user: userPayload, @Param('id') userId: string) {
-    return await this.userService.deleteUser(user, userId);
+  @ApiDeleteUser()
+  async deleteUser(
+    @GetCurrentUser('payload') user: userPayload,
+    @Param() userId: GetIdParamDto,
+    @Body() password: DeleteUserDto,
+  ) {
+    return await this.userService.deleteUser(user, userId.id, password.actualPassword);
   }
 }
