@@ -45,11 +45,13 @@ export class AuthService {
   }
 
   async getNewAccessToken(rt: string) {
-    const rtCompare = this.jwtService.verifyAsync(rt, {
-      secret: secret.JWT_SECRET_KEY,
-    });
-
-    if (!rtCompare) throw new UnauthorizedException('Acesso negado');
+    try {
+      await this.jwtService.verifyAsync(rt, {
+        secret: secret.JWT_SECRET_KEY,
+      });
+    } catch (_) {
+      throw new UnauthorizedException('Acesso negado');
+    }
 
     const decodedRefreshToken = this.jwtService.decode(rt);
     const user = await this.userService.findById(decodedRefreshToken.sub);
