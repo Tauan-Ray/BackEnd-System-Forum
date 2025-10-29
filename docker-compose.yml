@@ -9,6 +9,8 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    networks:
+      - shared-net
     depends_on:
       - postgres
   postgres:
@@ -23,7 +25,12 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shared-net
 
 volumes:
   postgres_data:
 
+networks:
+  shared-net:
+    external: true
