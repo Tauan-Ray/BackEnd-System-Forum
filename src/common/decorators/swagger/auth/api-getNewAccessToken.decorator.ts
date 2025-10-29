@@ -1,6 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { NewAccessTokenDto } from 'src/infra/http/auth/dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GetNewAccessTokenAuthResponse } from 'src/infra/http/auth/responses';
 
 export function ApiGetNewAccessToken() {
@@ -8,7 +7,6 @@ export function ApiGetNewAccessToken() {
     ApiOperation({
       summary: 'Obtem um novo token de acesso para o usuário',
     }),
-    ApiBody({ type: NewAccessTokenDto }),
     ApiResponse({
       status: 201,
       description: 'Novo token de acesso gerado com sucesso!',

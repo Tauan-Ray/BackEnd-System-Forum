@@ -1,6 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/infra/http/user/dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserResponseDto } from 'src/infra/http/user/responses';
 
 export function ApiCreateUser() {
@@ -9,7 +8,6 @@ export function ApiCreateUser() {
       summary: 'Cria um novo usuário',
       description: 'Acessivel apenas para users ADMIN',
     }),
-    ApiBody({ type: CreateUserDto }),
     ApiResponse({
       status: 201,
       description: 'Usuário criado com sucesso',
