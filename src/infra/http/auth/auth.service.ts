@@ -52,10 +52,13 @@ export class AuthService {
     if (!rtCompare) throw new UnauthorizedException('Acesso negado');
 
     const decodedRefreshToken = this.jwtService.decode(rt);
+    const user = await this.userService.findById(decodedRefreshToken.sub);
 
     const token = await this.getTokens({
       sub: decodedRefreshToken.sub,
       username: decodedRefreshToken.username,
+      role: user.ROLE,
+      email: user.EMAIL,
     });
 
     return {
