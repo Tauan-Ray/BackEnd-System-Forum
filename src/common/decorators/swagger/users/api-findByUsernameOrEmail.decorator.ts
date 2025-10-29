@@ -14,7 +14,6 @@ export function ApiFindByUsernameOrEmail() {
       type: UserResponseDto,
     }),
     ApiResponse({ status: 400, description: 'Dados fornecidos inválidos' }),
-    ApiResponse({ status: 403, description: 'Recurso proibido' }),
     ApiResponse({ status: 404, description: 'Nenhum usuário encontrado' }),
   );
 }

@@ -14,6 +14,5 @@ export function ApiFindManyUsers() {
       type: FindManyUsersResponseDto,
     }),
     ApiResponse({ status: 400, description: 'Dados fornecidos inválidos' }),
-    ApiResponse({ status: 403, description: 'Recurso proibido' }),
   );
 }
