@@ -10,7 +10,9 @@ import { secret } from 'src/config/env';
 describe('AuthService - getNewAccessToken', () => {
   let service: AuthService;
 
-  const mockUserService = {};
+  const mockUserService = {
+    findById: jest.fn(),
+  };
 
   const mockJwtService = {
     verifyAsync: jest.fn(),
@@ -43,7 +45,7 @@ describe('AuthService - getNewAccessToken', () => {
 
   it('should throw UnauthorizedException if refresh token is invalid', async () => {
     const rt = 'refreshToken';
-    mockJwtService.verifyAsync.mockReturnValue(false);
+    mockJwtService.verifyAsync.mockRejectedValue(new UnauthorizedException('Acesso negado'));
 
     try {
       await service.getNewAccessToken(rt);
@@ -59,10 +61,19 @@ describe('AuthService - getNewAccessToken', () => {
 
   it('should get new access token if refresh token is valid', async () => {
     const rt = 'refreshToken';
+    const userModel = {
+      ID_USER: randomUUID(),
+      USERNAME: '_tauankk',
+      NAME: 'Tauan-Ray',
+      EMAIL: 'tauan@example.com',
+      ROLE: 'ADMIN',
+      DT_CR: new Date(),
+    };
     const payloadRefreshToken = { sub: randomUUID(), username: '_tauankk' };
 
     mockJwtService.verifyAsync.mockReturnValue(true);
     mockJwtService.decode.mockReturnValue(payloadRefreshToken);
+    mockUserService.findById.mockResolvedValue(userModel);
 
     const spyGetTokens = jest.spyOn(service, 'getTokens');
 
@@ -72,6 +83,8 @@ describe('AuthService - getNewAccessToken', () => {
     expect(spyGetTokens).toHaveBeenCalledWith({
       sub: payloadRefreshToken.sub,
       username: payloadRefreshToken.username,
+      email: userModel.EMAIL,
+      role: userModel.ROLE,
     });
 
     expect(result).toHaveProperty('access_token');

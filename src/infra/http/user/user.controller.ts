@@ -30,7 +30,6 @@ import {
 @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
 @UseGuards(JwtGuard)
 @Controller('user')
-@RouteAdmin()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

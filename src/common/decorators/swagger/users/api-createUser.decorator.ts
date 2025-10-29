@@ -16,7 +16,6 @@ export function ApiCreateUser() {
       type: CreateUserResponseDto,
     }),
     ApiResponse({ status: 400, description: 'Dados fornecidos inválidos' }),
-    ApiResponse({ status: 403, description: 'Recurso proibido' }),
     ApiResponse({ status: 404, description: 'Nenhum usuário encontrado' }),
     ApiResponse({ status: 409, description: 'Email ou username já cadastrados no sistema' }),
   );
