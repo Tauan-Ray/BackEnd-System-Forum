@@ -10,5 +10,3 @@ RUN apk add --no-cache tzdata
 
 COPY . .
 RUN npm run build
-
-CMD ["npm", "run", "start:prod"]

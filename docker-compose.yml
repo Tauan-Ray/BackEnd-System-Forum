@@ -5,6 +5,7 @@ services:
     build: .
     container_name: backend-forum
     restart: always
+    command: npm run start:prod
     ports:
       - "3000:3000"
     env_file:
