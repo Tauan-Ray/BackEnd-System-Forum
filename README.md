@@ -2,97 +2,184 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h1 align="center">API Forum</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  <image
+  src="https://img.shields.io/github/languages/count/Tauan-Ray/BackEnd-System-Forum"
+  />
+  <image
+  src="https://img.shields.io/github/languages/top/Tauan-Ray/BackEnd-System-Forum"
+  />
+  <image
+  src="https://img.shields.io/github/last-commit/Tauan-Ray/BackEnd-System-Forum"
+  />
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# sumário
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [objetivos](#id01)
+- [descrição detalhada](#id01.01)
+- [tecnologias utilizadas/linguagens](#id02)
+- [ambiente de codificação](#id03)
+- [clonagem e instalação](#id04)
+- [autoria](#id05)
 
-## Project setup
+# objetivos <a name="id01"></a>
 
-```bash
-$ npm install
+Desenvolver uma API completa para um sistema de fórum focado em tecnologia, permitindo que os usuários se registrem, façam login, criem perguntas e respondam a outras perguntas. Além disso, o sistema oferece funcionalidades de likes e dislikes para as respostas.
+
+# descrição detalhada <a name="id01.01"></a>
+
+O objetivo deste projeto é desenvolver uma API utilizando o framework NestJS, com o Prisma como ORM para manipulação do banco de dados PostgreSQL. A API conta com endpoints que permitem a criação, visualização, atualização e exclusão de usuários, perguntas, respostas e categorias, além de um sistema de likes/dislikes para as respostas. Todas as rotas são protegidas por uma camada de autenticação baseada em JWT (JSON Web Token), garantindo o acesso apenas a usuários autenticados. Foram implementados DTOs para assegurar a integridade dos dados recebidos e enviados. O projeto inclui testes unitários desenvolvidos com o Jest, cobrindo os principais cenários de cada módulo, tanto em controllers quanto em services e alguns repositories. Além disso, a API foi totalmente documentada com o Swagger, proporcionando uma interface clara e acessível, contendo detalhes sobre os parâmetros (body, query e params), formatos de resposta, códigos de status e exemplos de retorno.
+
+# ferramenta/linguagem utilizada <a name="id02"></a>
+
+<div  align='center'>
+
+![Nest](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-000?style=for-the-badge&logo=postgresql)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+<br>
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge)
+![Node](https://img.shields.io/badge/Node.js-43853D?logo=node.js&logoColor=white&style=for-the-badge)
+![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
+
+
+
+</div>
+
+# ambiente de codificação <a name="id03"></a>
+
+<div  align='center'>
+
+![vscode](https://img.shields.io/badge/VSCode-0D1117?style=for-the-badge&logo=visual%20studio%20code&logoColor=blue)
+![git](https://img.shields.io/badge/GIT-0D1117?style=for-the-badge&logo=git&logoColor=red)
+![github](https://img.shields.io/badge/Github-0D1117?style=for-the-badge&logo=github&logoColor=fff)
+![npm](https://img.shields.io/badge/npm-0D1117?style=for-the-badge&logo=npm&logoColor=CB3837)
+
+</div>
+
+# clonagem e instalação <a name="id04"></a>
+
+## Configurando o ambiente
+
+Clone este repositório usando o comando e entre na pasta do projeto:
+
+```
+$ git clone https://github.com/Tauan-Ray/BackEnd-System-Forum.git
+$ cd BackEnd-System-Forum
 ```
 
-## Compile and run the project
+<br>
 
-```bash
-# development
-$ npm run start
+<h2>Rodando com Docker</h2>
+Este projeto já possui um ambiente Docker completo, com o PostgreSQL e o backend NestJS configurados via Docker Compose
 
-# watch mode
-$ npm run start:dev
+<br>
+<br>
 
-# production mode
-$ npm run start:prod
+Crie um arquivo .env para configurar a variável de ambiente para realizar a conexão com o banco de dados e a atribuição da Secret Key para o JWT:
+
+```
+DATABASE_URL="postgresql://usuario:senha@postgres:5432/nome-do-banco?schema=public"
+JWT_SECRET_KEY="suachavejwt"
+FORUM_SERVICE_PORT=3000
+```
+Importante: use postgres como host do banco, pois é o nome do serviço definido no docker-compose.yml
+
+<br>
+
+Construa e suba os containers:
+
+```
+docker compose up --build
 ```
 
-## Run tests
+O comando vai:
+- Criar a imagem do backend com base no Dockerfile
+- Subir o PostgreSQL
+- Rodar o servidor NestJS na porta definida no .env
 
-```bash
-# unit tests
-$ npm run test
+<br>
 
-# e2e tests
-$ npm run test:e2e
+Rode o seguinte comando para aplicar as migrates no seu banco de dados
 
-# test coverage
-$ npm run test:cov
+```
+docker exec backend-forum npx prisma migrate dev
 ```
 
-## Deployment
+<br>
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+Para conferir os logs gerados pelo backend rode o seguinte comando:
+```
+docker compose logs backend -f
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+<br>
 
-## Resources
+Acesse:
 
-Check out a few resources that may come in handy when working with NestJS:
+API -> http://localhost:3000
+<br>
+Documentação Swagger -> http://localhost:3000/docs/api
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+<hr>
 
-## Support
+<h2>Rodando localmente (sem Docker)</h2>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+<br>
 
-## Stay in touch
+Instale as dependências: Certifique-se de ter o Node.js (versão 18 ou superior) e PostgreSQL instalados em sua máquina.
+```
+npm install
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<br>
 
-## License
+Crie o arquivo .env com as variáveis de ambiente:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/nome-do-banco?schema=public"
+JWT_SECRET_KEY="suachavejwt"
+FORUM_SERVICE_PORT=3000
+```
+
+<br>
+
+Rode as migrações do Prisma:
+
+```
+npx prisma migrate dev
+```
+
+<br>
+
+Agora, inicie o servidor de desenvolvimento:
+
+```
+npm run start:dev
+```
+
+<br>
+
+O servidor estará disponível em http://localhost:3000
+<br>
+A documentação Swagger pode ser acessada em http://localhost:3000/docs/api
+
+# autoria <a name="id05"></a>
+
+<h3 align='center'> @Tauan-Ray • Desenvolvedor</h3>
+
+<div  align='center'>
+
+[![Linkedin](https://img.shields.io/badge/LinkedIn-0D1117?style=for-the-badge&logo=linkedin&logoColor=blue)](https://www.linkedin.com/in/tauan-ray/)
+<a href = "mailto:tauanray995@gmail.com">
+![Gmail](https://img.shields.io/badge/Gmail-0D1117?style=for-the-badge&logo=gmail&logoColor=red)</a>
+[![github](https://img.shields.io/badge/Github-0D1117?style=for-the-badge&logo=github&logoColor=fff)](https://www.github.com/Tauan-Ray)
+
+</div>
