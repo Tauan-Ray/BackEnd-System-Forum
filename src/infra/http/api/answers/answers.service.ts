@@ -94,6 +94,8 @@ export class AnswersService {
   }
 
   async getVotesByAnswer(idAnswer: string) {
+    await this.getAnswerById(idAnswer);
+
     const votesByAnswer = await this.answersRepository.getVotesByAnswer(idAnswer);
 
     return votesByAnswer;

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export enum TypeVotes {
@@ -6,6 +7,7 @@ export enum TypeVotes {
 }
 
 export class UpdateVoteDto {
+  @ApiProperty({ enum: TypeVotes, description: 'Tipo para indicar se vote é like ou deslike' })
   @IsEnum(TypeVotes)
   @IsNotEmpty()
   type: TypeVotes;
