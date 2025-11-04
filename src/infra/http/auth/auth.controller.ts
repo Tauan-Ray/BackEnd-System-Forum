@@ -12,6 +12,7 @@ import {
 import { JwtGuard } from 'src/common/guards';
 import { GetCurrentUser } from 'src/common/decorators/getCurrentUser.decorator';
 import type { userPayload } from 'src/common/guards/types';
+import { ApiGetUserMeAuth } from 'src/common/decorators/swagger/auth/api-getUserMe.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -43,6 +44,7 @@ export class AuthController {
   @Get('/me')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseGuards(JwtGuard)
+  @ApiGetUserMeAuth()
   async getUserMe(@GetCurrentUser('payload') user: userPayload) {
     return await this.authService.getUserMe(user.sub);
   }
