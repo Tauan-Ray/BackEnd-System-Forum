@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto, NewAccessTokenDto } from './dto';
 import { CreateUserDto } from '../user/dto';
@@ -9,6 +9,9 @@ import {
   ApiSignInAuth,
   ApiSignUpAuth,
 } from 'src/common/decorators/swagger/auth';
+import { JwtGuard } from 'src/common/guards';
+import { GetCurrentUser } from 'src/common/decorators/getCurrentUser.decorator';
+import type { userPayload } from 'src/common/guards/types';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -35,5 +38,12 @@ export class AuthController {
   @ApiGetNewAccessToken()
   async getNewAccessToken(@Body() rt: NewAccessTokenDto) {
     return await this.authService.getNewAccessToken(rt.refresh_token);
+  }
+
+  @Get('/me')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @UseGuards(JwtGuard)
+  async getUserMe(@GetCurrentUser('payload') user: userPayload) {
+    return await this.authService.getUserMe(user.sub);
   }
 }

@@ -101,4 +101,8 @@ export class AuthService {
   calculateExpireToken(token_expires: number): Date {
     return new Date(new Date().getTime() + token_expires * 1000);
   }
+
+  async getUserMe(userId: string) {
+    return await this.userService.findById(userId);
+  }
 }

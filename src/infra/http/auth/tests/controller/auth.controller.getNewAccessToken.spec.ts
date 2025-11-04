@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../auth.controller';
 import { AuthService } from '../../auth.service';
+import { JwtGuard } from 'src/common/guards';
 
 describe('AuthController - getNewAccessToken', () => {
   let controller: AuthController;
@@ -18,7 +19,10 @@ describe('AuthController - getNewAccessToken', () => {
           useValue: mockService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<AuthController>(AuthController);
   });
