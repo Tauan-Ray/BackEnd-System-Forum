@@ -5,6 +5,7 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { AuthDto } from '../../dto';
 import { CreateUserDto } from 'src/infra/http/user/dto';
+import { JwtGuard } from 'src/common/guards';
 
 describe('AuthController - signUp', () => {
   let controller: AuthController;
@@ -22,7 +23,10 @@ describe('AuthController - signUp', () => {
           useValue: mockService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<AuthController>(AuthController);
   });
