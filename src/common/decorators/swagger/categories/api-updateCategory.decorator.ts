@@ -6,6 +6,7 @@ export function ApiUpdateCategory() {
   return applyDecorators(
     ApiOperation({
       summary: 'Atualiza uma categoria existente',
+      description: 'Acessivel apenas para users ADMIN',
     }),
     ApiResponse({
       status: 200,

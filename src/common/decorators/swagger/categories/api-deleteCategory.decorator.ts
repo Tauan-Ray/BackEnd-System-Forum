@@ -6,6 +6,7 @@ export function ApiDeleteCategory() {
   return applyDecorators(
     ApiOperation({
       summary: 'Deleta uma categoria existente (soft delete)',
+      description: 'Acessivel apenas para users ADMIN',
     }),
     ApiResponse({
       status: 200,
