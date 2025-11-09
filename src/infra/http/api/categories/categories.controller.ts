@@ -15,12 +15,11 @@ import {
 } from 'src/common/decorators/swagger/categories';
 import { ApiForbiddenResponse } from 'src/common/decorators/swagger/api-forbiddenResponse.decorator';
 
-@ApiTags('Categories - only ADMIN')
+@ApiTags('Categories')
 @ApiBearerAuth()
 @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
 @ApiForbiddenResponse()
 @UseGuards(JwtGuard)
-@RouteAdmin()
 @Controller('category')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
@@ -38,12 +37,14 @@ export class CategoriesController {
   }
 
   @Post('/create')
+  @RouteAdmin()
   @ApiCreateCategory()
   async createCategory(@Body() createCategory: CreateCategoryDto) {
     return await this.categoriesService.createCategory(createCategory);
   }
 
   @Patch('update/:id')
+  @RouteAdmin()
   @ApiUpdateCategory()
   async updateCategory(
     @Param() categoryId: getCategoryIdDto,
@@ -53,6 +54,7 @@ export class CategoriesController {
   }
 
   @Patch('delete/:id')
+  @RouteAdmin()
   @ApiDeleteCategory()
   async deleteCategory(@Param() categoryId: getCategoryIdDto) {
     return await this.categoriesService.deleteCategory(categoryId.id);

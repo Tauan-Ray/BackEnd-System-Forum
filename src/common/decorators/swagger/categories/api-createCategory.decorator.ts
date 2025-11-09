@@ -6,6 +6,7 @@ export function ApiCreateCategory() {
   return applyDecorators(
     ApiOperation({
       summary: 'Cria uma nova categoria',
+      description: 'Acessivel apenas para users ADMIN',
     }),
     ApiResponse({
       status: 201,
