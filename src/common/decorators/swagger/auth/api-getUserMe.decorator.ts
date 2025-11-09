@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AuthResponse } from 'src/infra/http/auth/responses';
+import { GetUserMeResponseDto } from 'src/infra/http/auth/responses/getUserMeResponse.dto';
 
 export function ApiGetUserMeAuth() {
   return applyDecorators(
@@ -10,7 +10,7 @@ export function ApiGetUserMeAuth() {
     ApiResponse({
       status: 200,
       description: 'Dados do usuário obtidos com sucesso',
-      type: AuthResponse,
+      type: GetUserMeResponseDto,
     }),
     ApiResponse({ status: 401, description: 'Necessário informar token' }),
     ApiResponse({ status: 429, description: 'Too Many Requests' }),
