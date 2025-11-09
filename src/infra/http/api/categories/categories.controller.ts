@@ -19,7 +19,6 @@ import { ApiForbiddenResponse } from 'src/common/decorators/swagger/api-forbidde
 @ApiBearerAuth()
 @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
 @ApiForbiddenResponse()
-@UseGuards(JwtGuard)
 @Controller('category')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
@@ -38,6 +37,7 @@ export class CategoriesController {
 
   @Post('/create')
   @RouteAdmin()
+  @UseGuards(JwtGuard)
   @ApiCreateCategory()
   async createCategory(@Body() createCategory: CreateCategoryDto) {
     return await this.categoriesService.createCategory(createCategory);
@@ -45,6 +45,7 @@ export class CategoriesController {
 
   @Patch('update/:id')
   @RouteAdmin()
+  @UseGuards(JwtGuard)
   @ApiUpdateCategory()
   async updateCategory(
     @Param() categoryId: getCategoryIdDto,
@@ -55,6 +56,7 @@ export class CategoriesController {
 
   @Patch('delete/:id')
   @RouteAdmin()
+  @UseGuards(JwtGuard)
   @ApiDeleteCategory()
   async deleteCategory(@Param() categoryId: getCategoryIdDto) {
     return await this.categoriesService.deleteCategory(categoryId.id);
