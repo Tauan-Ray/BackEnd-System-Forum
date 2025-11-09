@@ -18,10 +18,15 @@ export class PrismaQuestionsRepository {
     limit = 10,
     DESCRIPTION,
     TITLE,
+    DT_IN,
+    DT_FM,
     ...args
   }: Prisma.QuestionWhereInput & FindManyQuestionsDto) {
     const qry: Prisma.QuestionFindManyArgs<DefaultArgs> = {
-      where: { DEL_AT: null, ...args },
+      where: {
+        DEL_AT: null,
+        ...args,
+      },
       select: {
         ID_QT: true,
         ID_USER: true,
@@ -38,6 +43,13 @@ export class PrismaQuestionsRepository {
         DT_UP: 'desc',
       },
     };
+
+    if (DT_IN || DT_FM) {
+      qry.where!.DT_CR = {
+        gte: DT_IN ? new Date(DT_IN.setHours(0, 0, 0)) : undefined,
+        lte: DT_FM ? new Date(DT_FM.setHours(23, 59, 59)) : undefined,
+      };
+    }
 
     if (DESCRIPTION) {
       qry.where = {
