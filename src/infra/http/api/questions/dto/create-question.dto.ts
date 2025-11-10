@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
+import { MaxTextLength } from 'src/common/decorators/MaxTextLenght.decorator';
 
 export class CreateQuestionDto {
   @ApiProperty({
@@ -17,7 +18,9 @@ export class CreateQuestionDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Length(5, 255, { message: 'A descrição deve conter no mínimo 5 caracteres e no máximo 255' })
+  @MaxTextLength(1200, {
+    message: 'A descrição não pode ultrapassar 1200 caracteres de texto puro',
+  })
   description: string;
 
   @ApiProperty({

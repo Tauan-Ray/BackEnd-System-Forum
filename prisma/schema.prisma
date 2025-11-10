@@ -49,7 +49,7 @@ model Category {
 model Question {
   ID_QT       String    @id @default(uuid())
   TITLE       String    @db.VarChar(60)
-  DESCRIPTION String    @db.VarChar(255)
+  DESCRIPTION String    @db.Text()
   DT_CR       DateTime  @default(now())
   DT_UP       DateTime  @updatedAt
   DEL_AT      DateTime?
