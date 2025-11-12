@@ -98,7 +98,7 @@ export class PrismaAnswersRepository {
     };
   }
 
-  async getAnswersByQuestion({ page = 0, limit = 10, id }) {
+  async getAnswersByQuestion({ page = 0, limit = 10, id, idUser = '' }) {
     const results = await this.prismaService.$queryRaw<
       Array<{
         ID_AN: string;
@@ -110,42 +110,41 @@ export class PrismaAnswersRepository {
         CATEGORY: string;
         likes: number;
         dislikes: number;
+        user_vote: 'LIKE' | 'DESLIKE' | null;
       }>
-    >`
-            SELECT
-                a."ID_AN",
-                a."ID_QT",
-                a."RESPONSE",
-                a."DT_CR",
-                u."USERNAME",
-                u."ROLE",
-                q."TITLE",
-                c."CATEGORY",
-                CAST(COUNT(CASE WHEN v."TYPE" = 'LIKE' THEN 1 END) AS INT) AS likes,
-                CAST(COUNT(CASE WHEN v."TYPE" = 'DESLIKE' THEN 1 END) AS INT) AS dislikes
-            FROM
-                "ANSWERS" a
-            JOIN "USERS" u ON
-                u."ID_USER" = a."ID_USER"
-            JOIN "QUESTIONS" q ON
-                q."ID_QT" = a."ID_QT"
-            JOIN "CATEGORIES" c ON
-                c."ID_CT" = q."ID_CT"
-            LEFT JOIN "VOTES" v ON
-                v."ID_AN" = a."ID_AN"
-            WHERE
-                a."ID_QT" = ${id}
-            GROUP BY
-                a."ID_AN",
-                u."USERNAME",
-                u."ROLE",
-                q."TITLE",
-                c."CATEGORY"
-            ORDER BY
-                likes DESC
-                OFFSET ${page * limit}
-            LIMIT ${limit};
-        `;
+    >(
+      Prisma.sql`
+      SELECT
+          a."ID_AN",
+          a."ID_QT",
+          a."RESPONSE",
+          a."DT_CR",
+          u."USERNAME",
+          u."ROLE",
+          q."TITLE",
+          c."CATEGORY",
+          CAST(COUNT(CASE WHEN v."TYPE" = 'LIKE' THEN 1 END) AS INT) AS likes,
+          CAST(COUNT(CASE WHEN v."TYPE" = 'DESLIKE' THEN 1 END) AS INT) AS dislikes,
+          uv."TYPE" AS user_vote
+      FROM "ANSWERS" a
+      JOIN "USERS" u ON u."ID_USER" = a."ID_USER"
+      JOIN "QUESTIONS" q ON q."ID_QT" = a."ID_QT"
+      JOIN "CATEGORIES" c ON c."ID_CT" = q."ID_CT"
+      LEFT JOIN "VOTES" v ON v."ID_AN" = a."ID_AN"
+      LEFT JOIN "VOTES" uv ON uv."ID_AN" = a."ID_AN" AND uv."ID_USER" = ${idUser ?? null}
+      WHERE a."ID_QT" = ${id}
+      GROUP BY
+          a."ID_AN",
+          u."USERNAME",
+          u."ROLE",
+          q."TITLE",
+          c."CATEGORY",
+          uv."TYPE"
+      ORDER BY likes DESC, a."DT_CR" DESC
+      OFFSET ${page * limit}
+      LIMIT ${limit};
+    `,
+    );
 
     const total = await this.prismaService.answer.count({
       where: { ID_QT: id, DEL_AT: null },
