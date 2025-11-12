@@ -28,4 +28,12 @@ export class GetAnswersByResourceDto {
   @Transform(({ value }) => (Number.isInteger(Number(value)) ? Number(value) : undefined))
   @IsInt()
   limit?: number;
+
+  @ApiProperty({
+    example: '4688c351-d5cb-4b08-ad2b-549c1208d345',
+    description: 'UUID do usuário para verificar se tem vote',
+  })
+  @IsUUID(undefined, { message: 'O id deve ser um UUID válido' })
+  @IsOptional()
+  idUser?: string;
 }
