@@ -12,20 +12,12 @@ export class FindManyQuestionsDto {
   ID_QT?: string;
 
   @ApiPropertyOptional({
-    example: 'Como criar projeto em nest js',
-    description: 'Titulo da pergunta',
+    example: 'Como criar projeto next js',
+    description: 'Titulo ou descrição da pergunta',
   })
   @IsString()
   @IsOptional()
-  TITLE?: string;
-
-  @ApiPropertyOptional({
-    example: 'Dicas de como criar projeto em nest js',
-    description: 'Descrição da pergunta',
-  })
-  @IsString()
-  @IsOptional()
-  DESCRIPTION?: string;
+  search: string;
 
   @ApiPropertyOptional({
     example: '97541a65-60d8-4c68-b707-2d29452cfe6a',

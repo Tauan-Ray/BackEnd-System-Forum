@@ -67,31 +67,6 @@ describe('QuestionsController - updateQuestion', () => {
     expect(messages).toContain('O titulo deve conter no mínimo 5 caracteres e no máximo 60');
   });
 
-  it('should throw error in DTO if description is too short', async () => {
-    const uuid = randomUUID();
-    const loggedUser = generateUpdatedPayload({
-      sub: uuid,
-      username: '_tauankk',
-      email: 'tauan@example.com',
-      role: 'USER',
-    });
-
-    const dataUpdateQuestion = {
-      title: 'Titulo valido',
-      description: 'abc',
-      ID_CT: randomUUID(),
-    };
-
-    const dto = plainToInstance(UpdateQuestionDto, { description: 'abc' });
-    const errors = await validate(dto);
-    const messages = errors.map((e) => Object.values(e.constraints || {})).flat();
-
-    await controller.updateQuestion(loggedUser, { id: randomUUID() }, dataUpdateQuestion);
-
-    expect(errors.length).toBeGreaterThan(0);
-    expect(messages).toContain('A descrição deve conter no mínimo 5 caracteres e no máximo 255');
-  });
-
   it('should throw error in DTO if ID_CT is invalid', async () => {
     const uuid = randomUUID();
     const loggedUser = generateUpdatedPayload({

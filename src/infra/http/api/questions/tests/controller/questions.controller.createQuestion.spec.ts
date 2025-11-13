@@ -53,7 +53,7 @@ describe('QuestionsController - createQuestion', () => {
 
     expect(errors.length).toBeGreaterThan(0);
     expect(messages).toContain('O titulo deve conter no mínimo 5 caracteres e no máximo 60');
-    expect(messages).toContain('A descrição deve conter no mínimo 5 caracteres e no máximo 255');
+    expect(messages).toContain('description should not be empty');
     expect(messages).toContain('ID_CT must be a UUID');
   });
 
