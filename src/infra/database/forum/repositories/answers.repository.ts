@@ -140,7 +140,10 @@ export class PrismaAnswersRepository {
           q."TITLE",
           c."CATEGORY",
           uv."TYPE"
-      ORDER BY likes DESC, a."DT_CR" DESC
+      ORDER BY
+        CASE WHEN a."ID_USER" = ${idUser ?? null} THEN 0 ELSE 1 END,
+        likes DESC,
+        a."DT_CR" DESC
       OFFSET ${page * limit}
       LIMIT ${limit};
     `,
