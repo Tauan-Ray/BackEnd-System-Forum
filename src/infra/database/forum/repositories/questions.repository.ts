@@ -16,8 +16,7 @@ export class PrismaQuestionsRepository {
   async getAllQuestions({
     page = 0,
     limit = 10,
-    DESCRIPTION,
-    TITLE,
+    search,
     DT_IN,
     DT_FM,
     ...args
@@ -51,23 +50,23 @@ export class PrismaQuestionsRepository {
       };
     }
 
-    if (DESCRIPTION) {
+    if (search) {
       qry.where = {
         ...qry.where,
-        DESCRIPTION: {
-          contains: DESCRIPTION,
-          mode: 'insensitive',
-        },
-      };
-    }
-
-    if (TITLE) {
-      qry.where = {
-        ...qry.where,
-        TITLE: {
-          contains: TITLE,
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            TITLE: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            DESCRIPTION: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
       };
     }
 
