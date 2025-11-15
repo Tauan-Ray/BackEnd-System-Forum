@@ -7,11 +7,11 @@ import { GetCurrentUser } from 'src/common/decorators/getCurrentUser.decorator';
 import type { userPayload } from 'src/common/guards/types';
 
 @Controller('storage')
-@UseGuards(JwtGuard)
 export class OciController {
   constructor(private readonly ociService: OciService) {}
 
   @Post('presign')
+  @UseGuards(JwtGuard)
   async presign(@GetCurrentUser('payload') user: userPayload) {
     const { uploadUrl, objectUrl, expiresAt } = await this.ociService.createPresignedUploadUrl(
       user.sub,
