@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build: .
@@ -14,6 +12,8 @@ services:
       - shared-net
     depends_on:
       - postgres
+    volumes:
+      - /c/Users/Tauan/.oci/docker:/root/.oci:ro
   postgres:
     image: postgres:16
     container_name: postgres_db
