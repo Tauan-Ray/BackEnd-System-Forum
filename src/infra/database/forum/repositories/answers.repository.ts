@@ -120,6 +120,7 @@ export class PrismaAnswersRepository {
           a."RESPONSE",
           a."DT_CR",
           u."USERNAME",
+          u."ID_USER",
           u."ROLE",
           q."TITLE",
           c."CATEGORY",
@@ -135,6 +136,7 @@ export class PrismaAnswersRepository {
       WHERE a."ID_QT" = ${id}
       GROUP BY
           a."ID_AN",
+          u."ID_USER",
           u."USERNAME",
           u."ROLE",
           q."TITLE",

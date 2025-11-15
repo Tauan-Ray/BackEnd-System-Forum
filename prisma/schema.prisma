@@ -19,9 +19,9 @@ enum TypeVotes {
 
 model User {
   ID_USER  String    @id @default(uuid())
-  USERNAME String    @unique
+  USERNAME String
   NAME     String
-  EMAIL    String    @unique
+  EMAIL    String
   PASSWORD String
   ROLE     UserRole  @default(USER)
   DT_CR    DateTime  @default(now())
