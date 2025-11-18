@@ -65,7 +65,18 @@ export class PrismaUserRepository {
         USERNAME: true,
         ROLE: true,
         DEL_AT: true,
+        DT_CR: true,
         PASSWORD: returnPassword,
+        _count: {
+          select: {
+            Question: {
+              where: { DEL_AT: null },
+            },
+            Answers: {
+              where: { DEL_AT: null },
+            },
+          },
+        },
       },
     });
 

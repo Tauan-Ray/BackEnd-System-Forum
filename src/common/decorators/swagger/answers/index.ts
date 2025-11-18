@@ -7,3 +7,4 @@ export * from './api-updateAnswer.decorator';
 export * from './api-deleteAnswer.decorator';
 export * from './api-updateVotes.decorator';
 export * from './api-getVotesByAnswer.decorator';
+export * from './api-getAllVotesUser.decorarator';

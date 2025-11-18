@@ -20,6 +20,7 @@ import {
   ApiCreateAnswer,
   ApiDeleteAnswer,
   ApiGetAllAnswers,
+  ApiGetAllVotesUser,
   ApiGetAnswerById,
   ApiGetAnswerByIdUser,
   ApiGetAnswerByQuestion,
@@ -127,5 +128,14 @@ export class AnswersController {
     const votesByAnswer = await this.answersService.getVotesByAnswer(idAnswer.id);
 
     return votesByAnswer;
+  }
+
+  @Get('user/:id/vote')
+  @UseGuards(JwtGuard)
+  @ApiGetAllVotesUser()
+  async getAllVotesUser(@GetCurrentUser('payload') user: userPayload) {
+    const allVotesUser = await this.answersService.getAllVotesUser(user.sub);
+
+    return allVotesUser;
   }
 }
