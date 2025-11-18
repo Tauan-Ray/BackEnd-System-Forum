@@ -16,8 +16,17 @@ export class UserResponseDto {
   @ApiProperty({ example: 'USER' })
   ROLE: string;
 
+  @ApiProperty({ example: new Date() })
+  DT_CR: Date;
+
+  @ApiProperty({ example: { Question: 7, Answers: 3 } })
+  _count: {
+    Question: number;
+    Answers: number;
+  };
+
   @ApiProperty({ example: null, nullable: true })
-  DEL_AT: string | null;
+  DEL_AT: Date | null;
 }
 
 export class dataUser {

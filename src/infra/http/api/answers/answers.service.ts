@@ -100,4 +100,10 @@ export class AnswersService {
 
     return votesByAnswer;
   }
+
+  async getAllVotesUser(idUser: string) {
+    const votesByUser = await this.answersRepository.getAllVotesByUser(idUser);
+
+    return votesByUser;
+  }
 }

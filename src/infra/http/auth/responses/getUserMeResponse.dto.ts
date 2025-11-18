@@ -20,4 +20,13 @@ export class GetUserMeResponseDto {
 
   @ApiProperty({ example: 'null' })
   DEL_AT: Date | null;
+
+  @ApiProperty({ example: null })
+  DT_CR: Date;
+
+  @ApiProperty({ example: { Question: 7, Answers: 3 } })
+  _count: {
+    Question: number;
+    Answers: number;
+  };
 }

@@ -256,4 +256,30 @@ export class PrismaAnswersRepository {
       DESLIKES: deslikes,
     };
   }
+
+  async getAllVotesByUser(idUser: string) {
+    const result = await this.prismaService.answer.findMany({
+      where: {
+        ID_USER: idUser,
+      },
+      select: {
+        VOTES: {
+          select: {
+            TYPE: true,
+          },
+        },
+      },
+    });
+
+    const votes = result.flatMap((answer) => answer.VOTES);
+    let likes = 0;
+    let dislikes = 0;
+
+    for (const vote of votes) {
+      if (vote.TYPE === 'LIKE') likes++;
+      if (vote.TYPE === 'DESLIKE') dislikes++;
+    }
+
+    return { likes, dislikes };
+  }
 }
