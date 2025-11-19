@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaForumService } from '../prisma.forum.service';
-import { CreateAnswerDto, UpdateAnswerDto } from 'src/infra/http/api/answers/dto';
+import {
+  CreateAnswerDto,
+  GetAnswersByUserDto,
+  UpdateAnswerDto,
+} from 'src/infra/http/api/answers/dto';
 import { TypeVotes } from 'src/infra/http/api/answers/dto/update-vote.dto';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
@@ -21,7 +25,9 @@ export class PrismaAnswersRepository {
         DT_CR: true,
         DEL_AT: true,
         User: { select: { USERNAME: true, ROLE: true } },
-        Question: { select: { TITLE: true, Category: { select: { CATEGORY: true } } } },
+        Question: {
+          select: { TITLE: true, Category: { select: { CATEGORY: true } } },
+        },
       },
       skip: page * limit,
       take: limit,
@@ -56,41 +62,95 @@ export class PrismaAnswersRepository {
         DT_CR: true,
         DEL_AT: true,
         User: { select: { USERNAME: true, ROLE: true } },
-        Question: { select: { TITLE: true, Category: { select: { CATEGORY: true } } } },
+        Question: {
+          select: { TITLE: true, Category: { select: { CATEGORY: true } } },
+        },
       },
     });
 
     return answer;
   }
 
-  async getAnswersByUser({ page = 0, limit = 10, id }) {
-    const qry: Prisma.AnswerFindManyArgs<DefaultArgs> = {
-      where: { ID_USER: id, DEL_AT: null },
-      select: {
-        ID_AN: true,
-        ID_USER: true,
-        ID_QT: true,
-        RESPONSE: true,
-        VOTES: { select: { ID_USER: true, TYPE: true } },
-        DT_CR: true,
-        DEL_AT: true,
-        User: { select: { USERNAME: true, ROLE: true } },
-        Question: { select: { TITLE: true, Category: { select: { CATEGORY: true } } } },
-      },
-      skip: page * limit,
-      take: limit,
-      orderBy: {
-        DT_UP: 'desc',
-      },
-    };
+  async getAnswersByUser(query: GetAnswersByUserDto) {
+    const { page = 0, limit = 10, id, search, DT_IN, DT_FM, ID_CT } = query;
 
-    const total = await this.prismaService.answer.count({ where: qry.where });
-    const _data = await this.prismaService.answer.findMany(qry);
+    const whereClauses = [Prisma.sql`u."ID_USER" = ${id}`, Prisma.sql`a."DEL_AT" IS NULL`];
+
+    if (search) {
+      whereClauses.push(Prisma.sql`(a."RESPONSE" ILIKE ${'%' + search + '%'})`);
+    }
+
+    if (DT_IN) {
+      whereClauses.push(Prisma.sql`a."DT_CR" >= ${DT_IN}`);
+    }
+
+    if (DT_FM) {
+      whereClauses.push(Prisma.sql`a."DT_CR" <= ${DT_FM}`);
+    }
+
+    if (ID_CT) {
+      whereClauses.push(Prisma.sql`c."ID_CT" = ${ID_CT}`);
+    }
+
+    const where = Prisma.sql`WHERE ${Prisma.join(whereClauses, ` AND `)}`;
+
+    const results = await this.prismaService.$queryRaw<
+      Array<{
+        ID_AN: string;
+        RESPONSE: string;
+        DT_CR: Date;
+        USERNAME: string;
+        ROLE: string;
+        TITLE: string;
+        CATEGORY: string;
+        likes: number;
+        dislikes: number;
+        user_vote: 'LIKE' | 'DESLIKE' | null;
+      }>
+    >(Prisma.sql`
+      SELECT
+        a."ID_AN",
+        a."ID_QT",
+        a."RESPONSE",
+        a."DT_CR",
+        u."USERNAME",
+        u."ID_USER",
+        u."ROLE",
+        q."TITLE",
+        c."CATEGORY",
+        CAST(COUNT(CASE WHEN v."TYPE" = 'LIKE' THEN 1 END) AS INT) AS likes,
+        CAST(COUNT(CASE WHEN v."TYPE" = 'DESLIKE' THEN 1 END) AS INT) AS dislikes,
+        uv."TYPE" AS user_vote
+      FROM "ANSWERS" a
+      JOIN "USERS" u ON u."ID_USER" = a."ID_USER"
+      JOIN "QUESTIONS" q ON q."ID_QT" = a."ID_QT"
+      JOIN "CATEGORIES" c ON c."ID_CT" = q."ID_CT"
+      LEFT JOIN "VOTES" v ON v."ID_AN" = a."ID_AN"
+      LEFT JOIN "VOTES" uv ON uv."ID_AN" = a."ID_AN" AND uv."ID_USER" = ${id ?? null}
+      ${where}
+      GROUP BY
+        a."ID_AN",
+        u."ID_USER",
+        u."USERNAME",
+        u."ROLE",
+        q."TITLE",
+        c."CATEGORY",
+        uv."TYPE"
+      ORDER BY
+        likes DESC,
+        a."DT_CR" DESC
+      OFFSET ${page * limit}
+      LIMIT ${limit};
+    `);
+
+    const total = await this.prismaService.answer.count({
+      where: { ID_USER: id, DEL_AT: null },
+    });
 
     return {
-      _data,
+      _data: results,
       _meta: {
-        _results: _data.length,
+        _results: results.length,
         _total_results: total,
         _page: page + 1,
         _total_page: Math.ceil(total / limit),

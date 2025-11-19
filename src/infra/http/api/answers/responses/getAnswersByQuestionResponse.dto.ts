@@ -34,7 +34,7 @@ class AnswerWithVotes {
   dislikes: number;
 }
 
-export class getAnswersByQuestion {
+export class getAnswersByQuestionResponse {
   @ApiProperty({ type: [AnswerWithVotes] })
   _data: AnswerWithVotes[];
 
