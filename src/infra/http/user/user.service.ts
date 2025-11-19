@@ -62,7 +62,8 @@ export class UserService {
       username: data.username,
     });
 
-    if (searchByUsernameOrEmail) throw new ConflictException('Email ou username em uso');
+    if (searchByUsernameOrEmail && searchByUsernameOrEmail.ID_USER !== user.sub)
+      throw new ConflictException('Email ou username em uso');
 
     if (user.sub !== id && user.role !== 'ADMIN')
       throw new UnauthorizedException('Você não pode alterar o usuário de outra pessoa');
