@@ -103,10 +103,19 @@ export class PrismaQuestionsRepository {
     return question;
   }
 
-  async getQuestionsByIdUser({ page = 0, limit = 10, id }: GetQuestionByUserDto) {
+  async getQuestionsByIdUser({
+    page = 0,
+    limit = 10,
+    id,
+    search,
+    DT_IN,
+    DT_FM,
+    ...args
+  }: GetQuestionByUserDto) {
     const qry: Prisma.QuestionFindManyArgs<DefaultArgs> = {
       where: {
         ID_USER: id,
+        ...args,
       },
       select: {
         ID_QT: true,
@@ -125,6 +134,34 @@ export class PrismaQuestionsRepository {
         DT_UP: 'desc',
       },
     };
+
+    if (DT_IN || DT_FM) {
+      qry.where!.DT_CR = {
+        gte: DT_IN ? new Date(DT_IN.setHours(0, 0, 0)) : undefined,
+        lte: DT_FM ? new Date(DT_FM.setHours(23, 59, 59)) : undefined,
+      };
+    }
+
+    if (search) {
+      qry.where = {
+        ...qry.where,
+        OR: [
+          {
+            TITLE: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            DESCRIPTION: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    }
+
     const total = await this.prismaService.question.count({ where: qry.where });
     const _data = await this.prismaService.question.findMany(qry);
 

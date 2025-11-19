@@ -6,6 +6,7 @@ import {
   CreateAnswerDto,
   FindManyAnswersDto,
   GetAnswersByResourceDto,
+  GetAnswersByUserDto,
   GetIdParamDto,
   UpdateAnswerDto,
   UpdateVoteDto,
@@ -56,7 +57,7 @@ export class AnswersController {
 
   @Get('/user/')
   @ApiGetAnswerByIdUser()
-  async getAnswersByUser(@Query() query: GetAnswersByResourceDto) {
+  async getAnswersByUser(@Query() query: GetAnswersByUserDto) {
     const answers = await this.answersService.getAnswersByUser(query);
 
     return answers;

@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { GetManyAnswersResponse } from 'src/infra/http/api/answers/responses';
+import { getAnswersByQuestionResponse } from 'src/infra/http/api/answers/responses';
 
 export function ApiGetAnswerByIdUser() {
   return applyDecorators(
@@ -10,7 +10,7 @@ export function ApiGetAnswerByIdUser() {
     ApiResponse({
       status: 200,
       description: 'Respostas relacionas ao usuário retornadas com sucesso',
-      type: GetManyAnswersResponse,
+      type: getAnswersByQuestionResponse,
     }),
     ApiResponse({ status: 400, description: 'Dados fornecidos inválidos' }),
     ApiResponse({ status: 404, description: 'Nenhum usuário encontrado' }),

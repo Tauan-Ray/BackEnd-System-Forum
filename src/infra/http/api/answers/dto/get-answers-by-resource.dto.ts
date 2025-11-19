@@ -29,7 +29,7 @@ export class GetAnswersByResourceDto {
   @IsInt()
   limit?: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '4688c351-d5cb-4b08-ad2b-549c1208d345',
     description: 'UUID do usuário para verificar se tem vote',
   })

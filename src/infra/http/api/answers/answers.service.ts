@@ -8,6 +8,7 @@ import {
   CreateAnswerDto,
   FindManyAnswersDto,
   GetAnswersByResourceDto,
+  GetAnswersByUserDto,
   UpdateAnswerDto,
   UpdateVoteDto,
 } from './dto';
@@ -37,7 +38,7 @@ export class AnswersService {
     return answer;
   }
 
-  async getAnswersByUser(query: GetAnswersByResourceDto) {
+  async getAnswersByUser(query: GetAnswersByUserDto) {
     const existingUser = await this.usersRepository.findById(query.id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
