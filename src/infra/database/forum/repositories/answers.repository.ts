@@ -99,6 +99,7 @@ export class PrismaAnswersRepository {
         ID_AN: string;
         RESPONSE: string;
         DT_CR: Date;
+        DT_UP: Date;
         USERNAME: string;
         ROLE: string;
         TITLE: string;
@@ -113,6 +114,7 @@ export class PrismaAnswersRepository {
         a."ID_QT",
         a."RESPONSE",
         a."DT_CR",
+        a."DT_UP",
         u."USERNAME",
         u."ID_USER",
         u."ROLE",
@@ -164,6 +166,7 @@ export class PrismaAnswersRepository {
         ID_AN: string;
         RESPONSE: string;
         DT_CR: Date;
+        DT_UP: Date;
         USERNAME: string;
         ROLE: string;
         TITLE: string;
@@ -179,6 +182,7 @@ export class PrismaAnswersRepository {
           a."ID_QT",
           a."RESPONSE",
           a."DT_CR",
+          a."DT_UP",
           u."USERNAME",
           u."ID_USER",
           u."ROLE",
@@ -193,7 +197,7 @@ export class PrismaAnswersRepository {
       JOIN "CATEGORIES" c ON c."ID_CT" = q."ID_CT"
       LEFT JOIN "VOTES" v ON v."ID_AN" = a."ID_AN"
       LEFT JOIN "VOTES" uv ON uv."ID_AN" = a."ID_AN" AND uv."ID_USER" = ${idUser ?? null}
-      WHERE a."ID_QT" = ${id}
+      WHERE a."ID_QT" = ${id} AND a."DEL_AT" IS NULL
       GROUP BY
           a."ID_AN",
           u."ID_USER",

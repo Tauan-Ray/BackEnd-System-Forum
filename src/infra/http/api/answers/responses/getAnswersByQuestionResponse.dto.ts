@@ -15,6 +15,9 @@ class AnswerWithVotes {
   @ApiProperty({ example: '2025-10-27T1:58:49.624Z' })
   DT_CR: Date;
 
+  @ApiProperty({ example: '2025-10-27T1:58:49.624Z' })
+  DT_UP: Date;
+
   @ApiProperty({ example: '_tauankk' })
   USERNAME: string;
 
