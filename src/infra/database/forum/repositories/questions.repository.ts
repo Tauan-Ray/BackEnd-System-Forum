@@ -95,6 +95,7 @@ export class PrismaQuestionsRepository {
         TITLE: true,
         DESCRIPTION: true,
         DT_CR: true,
+        DT_UP: true,
         DEL_AT: true,
         Category: { select: { CATEGORY: true } },
         User: { select: { USERNAME: true, ROLE: true } },
