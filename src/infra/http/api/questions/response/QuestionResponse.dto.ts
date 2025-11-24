@@ -33,6 +33,9 @@ export class QuestionResponseDto {
   @ApiProperty({ example: '2025-10-24T19:26:43.011Z' })
   DT_CR: Date;
 
+  @ApiProperty({ example: '2025-10-24T19:26:43.011Z' })
+  DT_UP: Date;
+
   @ApiProperty({ type: CategoryModel })
   Category: CategoryModel;
 
