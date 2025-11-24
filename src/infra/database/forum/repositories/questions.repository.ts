@@ -115,6 +115,7 @@ export class PrismaQuestionsRepository {
     const qry: Prisma.QuestionFindManyArgs<DefaultArgs> = {
       where: {
         ID_USER: id,
+        DEL_AT: null,
         ...args,
       },
       select: {
