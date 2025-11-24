@@ -8,7 +8,9 @@ export class PrismaCategoryRespository {
   constructor(private readonly prismaService: PrismaForumService) {}
 
   async getAllCategories() {
-    const categories = await this.prismaService.category.findMany();
+    const categories = await this.prismaService.category.findMany({
+      where: { DEL_AT: null },
+    });
 
     return categories;
   }
