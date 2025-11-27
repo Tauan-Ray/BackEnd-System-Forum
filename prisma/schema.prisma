@@ -28,9 +28,10 @@ model User {
   DT_UP    DateTime  @updatedAt
   DEL_AT   DateTime?
 
-  Question Question[]
-  Answers  Answer[]
-  VOTES    Vote[]
+  Question    Question[]
+  Answers     Answer[]
+  VOTES       Vote[]
+  tokenResets TokenReset[]
 
   @@map("USERS")
 }
@@ -95,4 +96,14 @@ model Vote {
 
   @@unique([ID_USER, ID_AN])
   @@map("VOTES")
+}
+
+model TokenReset {
+  ID_TOKEN   String   @id @default(uuid())
+  TOKEN      String
+  EXPIRATION DateTime
+  USED       Boolean @default(false)
+
+  User    User   @relation(fields: [ID_USER], references: [ID_USER])
+  ID_USER String
 }
