@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigFileAuthenticationDetailsProvider } from 'oci-common';
-import { ObjectStorageClient } from 'oci-objectstorage';
+import { ObjectStorageClient, requests } from 'oci-objectstorage';
 import { CreatePreauthenticatedRequestDetails } from 'oci-objectstorage/lib/model';
 import { ociConfig } from 'src/config/env';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class OciService {
@@ -10,7 +11,7 @@ export class OciService {
   private client: ObjectStorageClient;
   private namespace: string | undefined;
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.provider = new ConfigFileAuthenticationDetailsProvider();
     this.client = new ObjectStorageClient({ authenticationDetailsProvider: this.provider });
   }
@@ -49,7 +50,21 @@ export class OciService {
     const uploadUrl = `${base}${accessUri}`;
     const objectUrl = `${base}/n/${namespace}/b/${bucketName}/o/${encodeURIComponent(fileName)}`;
 
+    await this.userService.modifyUpdateAtUser(userId);
+
     return { uploadUrl, objectUrl, expiresAt: res.preauthenticatedRequest.timeExpires };
+  }
+
+  async headObject(bucketName: string, objectName: string) {
+    const namespace = await this.getNamespace();
+
+    const request: requests.HeadObjectRequest = {
+      namespaceName: namespace,
+      bucketName,
+      objectName,
+    };
+
+    return this.client.headObject(request);
   }
 
   async createPresignedDownloadUrl(
