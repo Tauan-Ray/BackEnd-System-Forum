@@ -13,4 +13,5 @@ export const secret = {
 export const ociConfig = {
   OCI_REGION: env.get('OCI_REGION').required().asString(),
   OCI_BUCKET_NAME: env.get('OCI_BUCKET_NAME').required().asString(),
+  DEFAULT_USER_IMAGE: env.get('DEFAULT_USER_IMAGE').required().asString(),
 };

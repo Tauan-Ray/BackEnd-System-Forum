@@ -12,6 +12,9 @@ class UserModel {
 
   @ApiProperty({ example: 'USER' })
   ROLE: UserRole;
+
+  @ApiProperty({ example: '2025-10-27T1:58:49.624Z' })
+  DT_UP: Date;
 }
 
 export class QuestionResponseDto {

@@ -66,6 +66,7 @@ export class PrismaUserRepository {
         ROLE: true,
         DEL_AT: true,
         DT_CR: true,
+        DT_UP: true,
         PASSWORD: returnPassword,
         _count: {
           select: {
@@ -197,6 +198,15 @@ export class PrismaUserRepository {
       where: { ID_USER: userId },
       data: {
         DEL_AT: new Date(),
+      },
+    });
+  }
+
+  async modifyUpdateAtUser(ID_USER: string) {
+    await this.prismaService.user.update({
+      where: { ID_USER },
+      data: {
+        DT_UP: new Date(),
       },
     });
   }
