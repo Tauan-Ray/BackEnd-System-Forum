@@ -96,4 +96,8 @@ export class UserService {
 
     return { message: 'Usuário deletado com sucesso' };
   }
+
+  async modifyUpdateAtUser(ID_USER: string) {
+    await this.prismaUserRepository.modifyUpdateAtUser(ID_USER);
+  }
 }
