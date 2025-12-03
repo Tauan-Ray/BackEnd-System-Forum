@@ -31,6 +31,7 @@ export class OciController {
       const { downloadUrl } = await this.ociService.createPresignedDownloadUrl(
         bucket,
         objectName,
+        params.id,
         900,
       );
 

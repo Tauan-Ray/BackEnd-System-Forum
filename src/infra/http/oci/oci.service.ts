@@ -25,6 +25,8 @@ export class OciService {
   }
 
   async createPresignedUploadUrl(userId: string) {
+    await this.userService.findById(userId);
+
     const namespace = await this.getNamespace();
     const bucketName = ociConfig.OCI_BUCKET_NAME;
 
@@ -70,8 +72,11 @@ export class OciService {
   async createPresignedDownloadUrl(
     bucketName: string,
     objectName: string,
+    userId: string,
     expirationInSeconds = 900,
   ) {
+    await this.userService.findById(userId);
+
     const namespace = await this.getNamespace();
 
     const details = {
