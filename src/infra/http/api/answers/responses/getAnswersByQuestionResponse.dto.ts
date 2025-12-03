@@ -31,7 +31,10 @@ class AnswerWithVotes {
   CATEGORY: string;
 
   @ApiProperty({ example: '2025-10-27T1:58:49.624Z' })
-  dt_up_user: string;
+  dt_up_user: Date;
+
+  @ApiProperty({ example: null, nullable: true })
+  del_at_user: Date | null;
 
   @ApiProperty({ example: 37 })
   likes: number;

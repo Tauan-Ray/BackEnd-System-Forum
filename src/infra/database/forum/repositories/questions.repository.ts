@@ -35,7 +35,7 @@ export class PrismaQuestionsRepository {
         DT_CR: true,
         DT_UP: true,
         Category: { select: { CATEGORY: true } },
-        User: { select: { USERNAME: true, ROLE: true, DT_UP: true } },
+        User: { select: { USERNAME: true, ROLE: true, DT_UP: true, DEL_AT: true } },
       },
       skip: page * limit,
       take: limit,
@@ -98,7 +98,7 @@ export class PrismaQuestionsRepository {
         DT_UP: true,
         DEL_AT: true,
         Category: { select: { CATEGORY: true } },
-        User: { select: { USERNAME: true, ROLE: true, DT_UP: true } },
+        User: { select: { USERNAME: true, ROLE: true, DT_UP: true, DEL_AT: true } },
       },
     });
 
@@ -130,7 +130,7 @@ export class PrismaQuestionsRepository {
         DT_UP: true,
         DEL_AT: true,
         Category: { select: { CATEGORY: true } },
-        User: { select: { USERNAME: true, ROLE: true, DT_UP: true } },
+        User: { select: { USERNAME: true, ROLE: true, DT_UP: true, DEL_AT: true } },
       },
       skip: page * limit,
       take: limit,

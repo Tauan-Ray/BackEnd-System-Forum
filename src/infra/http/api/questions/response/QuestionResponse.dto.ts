@@ -15,6 +15,9 @@ class UserModel {
 
   @ApiProperty({ example: '2025-10-27T1:58:49.624Z' })
   DT_UP: Date;
+
+  @ApiProperty({ example: null, nullable: true })
+  DEL_AT: Date | null;
 }
 
 export class QuestionResponseDto {
