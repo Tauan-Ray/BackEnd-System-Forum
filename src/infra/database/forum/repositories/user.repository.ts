@@ -54,10 +54,10 @@ export class PrismaUserRepository {
       };
     }
 
-    if (ID_USER) qry.where!.EMAIL = { contains: EMAIL };
-    if (USERNAME) qry.where!.USERNAME = { contains: USERNAME };
-    if (NAME) qry.where!.NAME = { contains: NAME };
-    if (EMAIL) qry.where!.EMAIL = ID_USER;
+    if (ID_USER) qry.where!.ID_USER = ID_USER;
+    if (USERNAME) qry.where!.USERNAME = { contains: USERNAME, mode: 'insensitive' };
+    if (NAME) qry.where!.NAME = { contains: NAME, mode: 'insensitive' };
+    if (EMAIL) qry.where!.EMAIL = { contains: EMAIL, mode: 'insensitive' };
 
     const total = await this.prismaService.user.count({ where: qry.where });
     const _data = await this.prismaService.user.findMany(qry);
