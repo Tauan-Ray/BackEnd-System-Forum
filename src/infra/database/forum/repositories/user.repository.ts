@@ -18,18 +18,26 @@ export class PrismaUserRepository {
     private readonly encryption: EncryptionService,
   ) {}
 
-  async findMany({ page = 0, limit = 10, ...args }: Prisma.UserWhereInput & FindManyUserDto) {
+  async findMany({
+    page = 0,
+    limit = 10,
+    EMAIL,
+    USERNAME,
+    ID_USER,
+    NAME,
+    DT_IN,
+    DT_FM,
+  }: Prisma.UserWhereInput & FindManyUserDto) {
     const qry: Prisma.UserFindManyArgs<DefaultArgs> = {
-      where: {
-        ...args,
-        DEL_AT: null,
-      },
+      where: {},
       select: {
         ID_USER: true,
         EMAIL: true,
         NAME: true,
         USERNAME: true,
         ROLE: true,
+        DT_CR: true,
+        DT_UP: true,
         DEL_AT: true,
       },
       skip: page * limit,
@@ -38,6 +46,19 @@ export class PrismaUserRepository {
         DT_UP: 'desc',
       },
     };
+
+    if (DT_IN || DT_FM) {
+      qry.where!.DT_CR = {
+        gte: DT_IN ? new Date(DT_IN.setHours(0, 0, 0)) : undefined,
+        lte: DT_FM ? new Date(DT_FM.setHours(23, 59, 59)) : undefined,
+      };
+    }
+
+    if (ID_USER) qry.where!.EMAIL = { contains: EMAIL };
+    if (USERNAME) qry.where!.USERNAME = { contains: USERNAME };
+    if (NAME) qry.where!.NAME = { contains: NAME };
+    if (EMAIL) qry.where!.EMAIL = ID_USER;
+
     const total = await this.prismaService.user.count({ where: qry.where });
     const _data = await this.prismaService.user.findMany(qry);
 

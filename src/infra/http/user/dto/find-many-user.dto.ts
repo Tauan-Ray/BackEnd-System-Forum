@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsDate, IsEmail, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class FindManyUserDto {
   @ApiPropertyOptional({
@@ -34,6 +34,24 @@ export class FindManyUserDto {
   @IsOptional()
   @IsString()
   NAME?: string;
+
+  @ApiPropertyOptional({
+    example: '2025-11-01T00:00:00Z',
+    description: 'Data inicial para filtrar usuários',
+  })
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value) : null))
+  @IsDate()
+  DT_IN?: Date;
+
+  @ApiPropertyOptional({
+    example: '2025-11-08T23:59:59Z',
+    description: 'Data final para filtrar usuários',
+  })
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value) : null))
+  @IsDate()
+  DT_FM?: Date;
 
   @ApiPropertyOptional({
     example: 1,
