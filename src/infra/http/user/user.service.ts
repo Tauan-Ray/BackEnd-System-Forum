@@ -97,7 +97,7 @@ export class UserService {
     const existingUser = await this.prismaUserRepository.findById(id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
-    if (id !== user.sub && isAdmin)
+    if (id !== user.sub && !isAdmin)
       throw new UnauthorizedException('Você não pode deletar o usuário de outra pessoa!');
 
     await this.prismaUserRepository.deleteUser(id, password, isAdmin);
