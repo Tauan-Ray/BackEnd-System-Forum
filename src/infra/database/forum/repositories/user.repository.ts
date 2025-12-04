@@ -161,14 +161,14 @@ export class PrismaUserRepository {
     };
   }
 
-  async updateUser(id: string, data: UpdateUserDto) {
+  async updateUser(id: string, data: UpdateUserDto, isAdmin: boolean) {
     const existingUser = await this.findById(id, true);
 
     const passwordMatches = await this.encryption.compare(
       data.actualPassword,
       existingUser!.PASSWORD,
     );
-    if (!passwordMatches) throw new ForbiddenException('Senha atual incorreta!');
+    if (!passwordMatches && !isAdmin) throw new ForbiddenException('Senha atual incorreta!');
     const updatedUser = await this.prismaService.user.update({
       where: { ID_USER: id },
       data: {

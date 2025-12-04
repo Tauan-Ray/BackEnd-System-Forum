@@ -54,6 +54,7 @@ export class UserService {
   }
 
   async updateUser(user: userPayload, id: string, data: UpdateUserDto) {
+    const isAdmin = user.role === 'ADMIN';
     const existingUser = await this.prismaUserRepository.findById(id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
@@ -62,13 +63,18 @@ export class UserService {
       username: data.username,
     });
 
-    if (searchByUsernameOrEmail && searchByUsernameOrEmail.ID_USER !== user.sub)
-      throw new ConflictException('Email ou username em uso');
-
-    if (user.sub !== id && user.role !== 'ADMIN')
+    if (user.sub !== id && !isAdmin)
       throw new UnauthorizedException('Você não pode alterar o usuário de outra pessoa');
 
-    const updatedUser = await this.prismaUserRepository.updateUser(id, data);
+    if (isAdmin) {
+      if (searchByUsernameOrEmail?.ID_USER !== id)
+        throw new ConflictException('Email ou username em uso');
+    } else {
+      if (searchByUsernameOrEmail && searchByUsernameOrEmail.ID_USER !== user.sub)
+        throw new ConflictException('Email ou username em uso');
+    }
+
+    const updatedUser = await this.prismaUserRepository.updateUser(id, data, isAdmin);
 
     return updatedUser;
   }
