@@ -60,6 +60,12 @@ export class PrismaUserRepository {
     if (EMAIL) qry.where!.EMAIL = { contains: EMAIL, mode: 'insensitive' };
 
     const total = await this.prismaService.user.count({ where: qry.where });
+    const activeUsers = await this.prismaService.user.count({
+      where: { ...qry.where, DEL_AT: null },
+    });
+    const deletedUsers = await this.prismaService.user.count({
+      where: { ...qry.where, DEL_AT: { not: null } },
+    });
     const _data = await this.prismaService.user.findMany(qry);
 
     return {
@@ -67,6 +73,10 @@ export class PrismaUserRepository {
       _meta: {
         _results: _data.length,
         _total_results: total,
+        _meta_users: {
+          activeUsers,
+          deletedUsers,
+        },
         _page: page + 1,
         _total_page: Math.ceil(total / limit),
       },
