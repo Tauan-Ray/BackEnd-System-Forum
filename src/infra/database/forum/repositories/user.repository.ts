@@ -73,11 +73,11 @@ export class PrismaUserRepository {
     };
   }
 
-  async findById(userId: string, returnPassword = false) {
+  async findById(userId: string, returnPassword = false, addDelAt = true) {
     const find = await this.prismaService.user.findUnique({
       where: {
         ID_USER: userId,
-        DEL_AT: null,
+        ...(addDelAt && { DEL_AT: null }),
       },
       select: {
         ID_USER: true,

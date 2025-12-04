@@ -110,7 +110,7 @@ export class UserService {
   }
 
   async restoreUser(id: string) {
-    const existingUser = await this.prismaUserRepository.findById(id);
+    const existingUser = await this.prismaUserRepository.findById(id, false, false);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
     if (!existingUser.DEL_AT)
