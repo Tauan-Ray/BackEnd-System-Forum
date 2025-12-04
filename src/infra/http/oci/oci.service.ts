@@ -75,8 +75,6 @@ export class OciService {
     userId: string,
     expirationInSeconds = 900,
   ) {
-    await this.userService.findById(userId);
-
     const namespace = await this.getNamespace();
 
     const details = {
