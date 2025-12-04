@@ -21,6 +21,7 @@ import {
   ApiFindByIdUser,
   ApiFindByUsernameOrEmail,
   ApiFindManyUsers,
+  ApiRestoreUser,
   ApiUpdateUser,
   ApiUpdateUserPassword,
 } from 'src/common/decorators/swagger/users';
@@ -99,5 +100,12 @@ export class UserController {
     @Body() password: DeleteUserDto,
   ) {
     return await this.userService.deleteUser(user, userId.id, password.actualPassword);
+  }
+
+  @Patch('restore/:id')
+  @RouteAdmin()
+  @ApiRestoreUser()
+  async restoreUser(@Param() userId: GetIdParamDto) {
+    return await this.userService.restoreUser(userId.id);
   }
 }

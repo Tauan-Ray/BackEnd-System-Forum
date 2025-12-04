@@ -231,4 +231,13 @@ export class PrismaUserRepository {
       },
     });
   }
+
+  async restoreUser(id: string) {
+    await this.prismaService.user.update({
+      where: { ID_USER: id },
+      data: {
+        DEL_AT: null,
+      },
+    });
+  }
 }

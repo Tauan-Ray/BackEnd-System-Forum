@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaUserRepository } from 'src/infra/database/forum/repositories/user.repository';
 import { CreateUserDto, FindManyUserDto, FindUniqueUserDto, UpdatePasswordDto } from './dto';
@@ -106,5 +107,19 @@ export class UserService {
 
   async modifyUpdateAtUser(ID_USER: string) {
     await this.prismaUserRepository.modifyUpdateAtUser(ID_USER);
+  }
+
+  async restoreUser(id: string) {
+    const existingUser = await this.prismaUserRepository.findById(id);
+    if (!existingUser) throw new NotFoundException('Usuário não encontrado');
+
+    if (!existingUser.DEL_AT)
+      throw new UnprocessableEntityException('O usuário não está com o status de deletado');
+
+    await this.prismaUserRepository.restoreUser(id);
+
+    return {
+      message: 'Usuário restaurado com sucesso',
+    };
   }
 }

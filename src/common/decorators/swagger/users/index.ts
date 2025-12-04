@@ -5,3 +5,4 @@ export * from './api-createUser.decorator';
 export * from './api-updateUser.decorator';
 export * from './api-updateUserPassword.decorator';
 export * from './api-deleteUser.decorator';
+export * from './api-restoreUser.decorator';
