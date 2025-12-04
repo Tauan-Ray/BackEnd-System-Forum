@@ -209,11 +209,11 @@ export class PrismaUserRepository {
     });
   }
 
-  async deleteUser(userId: string, password: string) {
+  async deleteUser(userId: string, password: string, isAdmin: boolean) {
     const existingUser = await this.findById(userId, true);
 
     const passwordMatches = await this.encryption.compare(password, existingUser!.PASSWORD);
-    if (!passwordMatches) throw new ForbiddenException('Senha atual incorreta!');
+    if (!passwordMatches && !isAdmin) throw new ForbiddenException('Senha atual incorreta!');
 
     await this.prismaService.user.update({
       where: { ID_USER: userId },

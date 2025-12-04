@@ -92,13 +92,14 @@ export class UserService {
   }
 
   async deleteUser(user: userPayload, id: string, password: string) {
+    const isAdmin = user.role === 'ADMIN';
     const existingUser = await this.prismaUserRepository.findById(id);
     if (!existingUser) throw new NotFoundException('Usuário não encontrado');
 
-    if (id !== user.sub && user.role !== 'ADMIN')
+    if (id !== user.sub && isAdmin)
       throw new UnauthorizedException('Você não pode deletar o usuário de outra pessoa!');
 
-    await this.prismaUserRepository.deleteUser(id, password);
+    await this.prismaUserRepository.deleteUser(id, password, isAdmin);
 
     return { message: 'Usuário deletado com sucesso' };
   }
