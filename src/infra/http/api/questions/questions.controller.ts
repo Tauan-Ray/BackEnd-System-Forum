@@ -100,7 +100,7 @@ export class QuestionsController {
     return await this.questionsService.deleteQuestion(id.id, user);
   }
 
-  @Patch('/delete/:id')
+  @Patch('/restore/:id')
   @ApiBearerAuth()
   @ApiRestoreQuestion()
   async restoreQuestion(@Param() id: GetIdParamDto) {
