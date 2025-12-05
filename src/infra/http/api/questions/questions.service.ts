@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { userPayload } from 'src/common/guards/types';
 import {
   PrismaCategoryRespository,
@@ -79,5 +84,19 @@ export class QuestionsService {
     await this.questionsRepository.deleteQuestion(idQuestion);
 
     return { message: 'Pergunta deletada com sucesso' };
+  }
+
+  async restoreQuestion(id: string) {
+    const existingUser = await this.questionsRepository.getQuestionById(id);
+    if (!existingUser) throw new NotFoundException('Usuário não encontrado');
+
+    if (!existingUser.DEL_AT)
+      throw new UnprocessableEntityException('A pergunta não está com o status de deletado');
+
+    await this.questionsRepository.restoreQuestion(id);
+
+    return {
+      message: 'Pergunta restaurada com sucesso',
+    };
   }
 }

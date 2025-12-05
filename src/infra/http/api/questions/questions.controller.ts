@@ -18,6 +18,7 @@ import {
   ApiGetAllQuestions,
   ApiGetQuestionById,
   ApiGetQuestionsByIdUser,
+  ApiRestoreQuestion,
   ApiUpdateQuestion,
 } from 'src/common/decorators/swagger/questions';
 import { RouteAdmin } from 'src/common/decorators/admin.decorator';
@@ -95,8 +96,14 @@ export class QuestionsController {
   @Patch('/delete/:id')
   @ApiBearerAuth()
   @ApiDeleteQuestion()
-  @ApiBearerAuth()
   async deleteQuestion(@GetCurrentUser('payload') user: userPayload, @Param() id: GetIdParamDto) {
     return await this.questionsService.deleteQuestion(id.id, user);
+  }
+
+  @Patch('/delete/:id')
+  @ApiBearerAuth()
+  @ApiRestoreQuestion()
+  async restoreQuestion(@Param() id: GetIdParamDto) {
+    return await this.questionsService.restoreQuestion(id.id);
   }
 }

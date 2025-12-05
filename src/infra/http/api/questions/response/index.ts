@@ -4,3 +4,4 @@ export * from './getQuestionsByIdUserResponse.dto';
 export * from './createQuestionResponse.dto';
 export * from './updateQuestionResponse.dto';
 export * from './deleteQuestionResponse.dto';
+export * from './restoreQuestionResponse.dto';

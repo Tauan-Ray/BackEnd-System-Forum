@@ -303,4 +303,15 @@ export class PrismaQuestionsRepository {
       },
     });
   }
+
+  async restoreQuestion(id: string) {
+    await this.prismaService.question.update({
+      where: {
+        ID_QT: id,
+      },
+      data: {
+        DEL_AT: null,
+      },
+    });
+  }
 }
