@@ -34,6 +34,7 @@ export class PrismaQuestionsRepository {
         DESCRIPTION: true,
         DT_CR: true,
         DT_UP: true,
+        DEL_AT: true,
         Category: { select: { CATEGORY: true } },
         User: { select: { USERNAME: true, ROLE: true, DT_UP: true, DEL_AT: true } },
       },
@@ -73,6 +74,84 @@ export class PrismaQuestionsRepository {
 
     const total = await this.prismaService.question.count({ where: qry.where });
     const _data = await this.prismaService.question.findMany(qry);
+
+    return {
+      _data,
+      _meta: {
+        _results: _data.length,
+        _total_results: total,
+        _page: page + 1,
+        _total_page: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getAllQuestionsAdmin({
+    page = 0,
+    limit = 10,
+    search,
+    DT_IN,
+    DT_FM,
+    ...args
+  }: Prisma.QuestionWhereInput & FindManyQuestionsDto) {
+    const qry: Prisma.QuestionFindManyArgs<DefaultArgs> = {
+      where: {
+        ...args,
+      },
+      select: {
+        ID_QT: true,
+        ID_USER: true,
+        ID_CT: true,
+        TITLE: true,
+        DESCRIPTION: true,
+        DT_CR: true,
+        DT_UP: true,
+        DEL_AT: true,
+        Category: { select: { CATEGORY: true } },
+        User: { select: { USERNAME: true, ROLE: true, DT_UP: true, DEL_AT: true } },
+        Answers: true,
+        _count: {
+          select: { Answers: true },
+        },
+      },
+      skip: page * limit,
+      take: limit,
+      orderBy: {
+        DT_UP: 'desc',
+      },
+    };
+
+    if (DT_IN || DT_FM) {
+      qry.where!.DT_CR = {
+        gte: DT_IN ? new Date(DT_IN.setHours(0, 0, 0)) : undefined,
+        lte: DT_FM ? new Date(DT_FM.setHours(23, 59, 59)) : undefined,
+      };
+    }
+
+    if (search) {
+      qry.where = {
+        ...qry.where,
+        OR: [
+          {
+            TITLE: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            DESCRIPTION: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    }
+
+    const total = await this.prismaService.question.count({ where: qry.where });
+    const _data = await this.prismaService.question.findMany(qry);
+
+    console.log(_data[0]);
 
     return {
       _data,

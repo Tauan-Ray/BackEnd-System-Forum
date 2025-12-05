@@ -22,6 +22,12 @@ export class QuestionsService {
     return questions;
   }
 
+  async getAllQuestionsAdmin(args: FindManyQuestionsDto) {
+    const questions = await this.questionsRepository.getAllQuestionsAdmin(args);
+
+    return questions;
+  }
+
   async getQuestionById(id: string) {
     const questionById = await this.questionsRepository.getQuestionById(id);
 

@@ -20,6 +20,7 @@ import {
   ApiGetQuestionsByIdUser,
   ApiUpdateQuestion,
 } from 'src/common/decorators/swagger/questions';
+import { RouteAdmin } from 'src/common/decorators/admin.decorator';
 
 @ApiTags('Questions')
 @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
@@ -28,9 +29,18 @@ export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
   @Get('/all')
-  @ApiGetAllQuestions()
+  @ApiGetAllQuestions('user')
   async getAllQuestions(@Query() query: FindManyQuestionsDto) {
     const questions = await this.questionsService.getAllQuestions(query);
+
+    return questions;
+  }
+
+  @Get('/all/admin')
+  @RouteAdmin()
+  @ApiGetAllQuestions('admin')
+  async getAllQuestionsAdmin(@Query() query: FindManyQuestionsDto) {
+    const questions = await this.questionsService.getAllQuestionsAdmin(query);
 
     return questions;
   }
