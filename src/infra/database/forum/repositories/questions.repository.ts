@@ -151,8 +151,6 @@ export class PrismaQuestionsRepository {
     const total = await this.prismaService.question.count({ where: qry.where });
     const _data = await this.prismaService.question.findMany(qry);
 
-    console.log(_data[0]);
-
     return {
       _data,
       _meta: {

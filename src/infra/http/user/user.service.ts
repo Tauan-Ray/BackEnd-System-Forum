@@ -68,7 +68,7 @@ export class UserService {
       throw new UnauthorizedException('Você não pode alterar o usuário de outra pessoa');
 
     if (isAdmin) {
-      if (searchByUsernameOrEmail?.ID_USER !== id)
+      if (searchByUsernameOrEmail && searchByUsernameOrEmail.ID_USER !== id)
         throw new ConflictException('Email ou username em uso');
     } else {
       if (searchByUsernameOrEmail && searchByUsernameOrEmail.ID_USER !== user.sub)
