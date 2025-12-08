@@ -56,13 +56,17 @@ describe('PrismaUserRepository - findMany', () => {
 
     const result = await repository.findMany({ page: 0, limit: 10 });
 
-    expect(mockPrisma.user.count).toHaveBeenCalledTimes(1);
+    expect(mockPrisma.user.count).toHaveBeenCalledTimes(3);
     expect(mockPrisma.user.findMany).toHaveBeenCalledTimes(1);
 
     expect(result._data).toEqual(mockUsers);
     expect(result._meta).toEqual({
       _results: 1,
       _total_results: 1,
+      _meta_users: {
+        activeUsers: undefined,
+        deletedUsers: undefined,
+      },
       _page: 1,
       _total_page: 1,
     });

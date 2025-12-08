@@ -118,7 +118,7 @@ describe('UserService - deleteUser', () => {
     expect(mockRepository.findById).toHaveBeenCalledWith(uuid);
 
     expect(mockRepository.deleteUser).toHaveBeenCalledTimes(1);
-    expect(mockRepository.deleteUser).toHaveBeenCalledWith(uuid, 'password');
+    expect(mockRepository.deleteUser).toHaveBeenCalledWith(uuid, 'password', false);
 
     expect(result).toEqual(responseDeleteUser);
     expect(result.message).toBe('Usuário deletado com sucesso');
@@ -158,7 +158,7 @@ describe('UserService - deleteUser', () => {
     expect(mockRepository.findById).toHaveBeenCalledWith(otherId);
 
     expect(mockRepository.deleteUser).toHaveBeenCalledTimes(1);
-    expect(mockRepository.deleteUser).toHaveBeenCalledWith(otherId, 'password');
+    expect(mockRepository.deleteUser).toHaveBeenCalledWith(otherId, 'password', true);
 
     expect(result).toEqual(updatedUser);
     expect(result.message).toBe('Usuário deletado com sucesso');

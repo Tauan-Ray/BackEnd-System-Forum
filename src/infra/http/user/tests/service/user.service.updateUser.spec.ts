@@ -216,7 +216,7 @@ describe('UserService - updateUser', () => {
     expect(mockRepository.findById).toHaveBeenCalledWith(uuid);
 
     expect(mockRepository.updateUser).toHaveBeenCalledTimes(1);
-    expect(mockRepository.updateUser).toHaveBeenCalledWith(uuid, dataUpdateUser);
+    expect(mockRepository.updateUser).toHaveBeenCalledWith(uuid, dataUpdateUser, false);
 
     expect(getByUsernameOrEmail).toHaveBeenCalledTimes(1);
     expect(getByUsernameOrEmail).toHaveBeenCalledWith({
@@ -277,7 +277,7 @@ describe('UserService - updateUser', () => {
     expect(mockRepository.findById).toHaveBeenCalledWith(otherId);
 
     expect(mockRepository.updateUser).toHaveBeenCalledTimes(1);
-    expect(mockRepository.updateUser).toHaveBeenCalledWith(otherId, dataUpdateUser);
+    expect(mockRepository.updateUser).toHaveBeenCalledWith(otherId, dataUpdateUser, true);
 
     expect(getByUsernameOrEmail).toHaveBeenCalledTimes(1);
     expect(getByUsernameOrEmail).toHaveBeenCalledWith({
