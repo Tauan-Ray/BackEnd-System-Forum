@@ -42,8 +42,11 @@ export class AnswersController {
   @UseGuards(JwtGuard)
   @ApiForbiddenResponse()
   @ApiGetAllAnswers()
-  async getAllAnswers(@Query() query: FindManyAnswersDto) {
-    const answers = await this.answersService.getAllAnswers(query);
+  async getAllAnswers(
+    @Query() query: FindManyAnswersDto,
+    @GetCurrentUser('payload') user: userPayload,
+  ) {
+    const answers = await this.answersService.getAllAnswers(query, user.sub);
 
     return answers;
   }

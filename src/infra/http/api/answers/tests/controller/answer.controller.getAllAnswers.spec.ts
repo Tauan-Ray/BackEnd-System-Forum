@@ -6,6 +6,8 @@ import { ThrottlerConfigGuard } from 'src/common/guards/throttler-config.guard';
 import { AnswersController } from '../../answers.controller';
 import { AnswersService } from '../../answers.service';
 import { FindManyAnswersDto } from '../../dto';
+import { randomUUID } from 'crypto';
+import { generateUpdatedPayload } from 'src/infra/http/user/tests/util/GeneratorUser.util';
 
 describe('AnswersController - getAllAnswers', () => {
   let controller: AnswersController;
@@ -42,38 +44,63 @@ describe('AnswersController - getAllAnswers', () => {
   });
 
   it('should call service with empty filters', async () => {
-    await controller.getAllAnswers({});
+    const loggedUser = generateUpdatedPayload({
+      sub: randomUUID(),
+      username: '_tauankk',
+      email: 'tauan@example.com',
+      role: 'ADMIN',
+    });
+    await controller.getAllAnswers({}, loggedUser);
 
     expect(mockService.getAllAnswers).toHaveBeenCalledTimes(1);
-    expect(mockService.getAllAnswers).toHaveBeenCalledWith({});
+    expect(mockService.getAllAnswers).toHaveBeenCalledWith({}, loggedUser.sub);
   });
 
   it('should ignore invalid page/limit values', async () => {
     const query = { page: 'abc', limit: 'def' };
 
+    const loggedUser = generateUpdatedPayload({
+      sub: randomUUID(),
+      username: '_tauankk',
+      email: 'tauan@example.com',
+      role: 'ADMIN',
+    });
+
     const dto = plainToInstance(FindManyAnswersDto, query);
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
 
-    await controller.getAllAnswers(dto);
+    await controller.getAllAnswers(dto, loggedUser);
 
     expect(mockService.getAllAnswers).toHaveBeenCalledTimes(1);
-    expect(mockService.getAllAnswers).toHaveBeenCalledWith({ page: undefined, limit: undefined });
+    expect(mockService.getAllAnswers).toHaveBeenCalledWith(
+      { page: undefined, limit: undefined },
+      loggedUser.sub,
+    );
   });
 
   it('should call service page and limit transformed', async () => {
     const query = { page: '1', limit: '10' };
+    const loggedUser = generateUpdatedPayload({
+      sub: randomUUID(),
+      username: '_tauankk',
+      email: 'tauan@example.com',
+      role: 'ADMIN',
+    });
 
     const dto = plainToInstance(FindManyAnswersDto, query);
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
 
-    await controller.getAllAnswers(dto);
+    await controller.getAllAnswers(dto, loggedUser);
 
     expect(mockService.getAllAnswers).toHaveBeenCalledTimes(1);
-    expect(mockService.getAllAnswers).toHaveBeenCalledWith({
-      page: 1,
-      limit: 10,
-    });
+    expect(mockService.getAllAnswers).toHaveBeenCalledWith(
+      {
+        page: 1,
+        limit: 10,
+      },
+      loggedUser.sub,
+    );
   });
 });

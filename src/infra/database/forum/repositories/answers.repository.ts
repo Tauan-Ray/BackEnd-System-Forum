@@ -2,47 +2,101 @@ import { Injectable } from '@nestjs/common';
 import { PrismaForumService } from '../prisma.forum.service';
 import {
   CreateAnswerDto,
+  FindManyAnswersDto,
   GetAnswersByUserDto,
   UpdateAnswerDto,
 } from 'src/infra/http/api/answers/dto';
 import { TypeVotes } from 'src/infra/http/api/answers/dto/update-vote.dto';
 import { Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PrismaAnswersRepository {
   constructor(private readonly prismaService: PrismaForumService) {}
 
-  async getAllAnswers({ page = 0, limit = 10 }) {
-    const qry: Prisma.AnswerFindManyArgs<DefaultArgs> = {
-      where: { DEL_AT: null },
-      select: {
-        ID_AN: true,
-        ID_USER: true,
-        ID_QT: true,
-        RESPONSE: true,
-        VOTES: { select: { ID_USER: true, TYPE: true } },
-        DT_CR: true,
-        DEL_AT: true,
-        User: { select: { USERNAME: true, ROLE: true } },
-        Question: {
-          select: { TITLE: true, Category: { select: { CATEGORY: true } } },
-        },
-      },
-      skip: page * limit,
-      take: limit,
-      orderBy: {
-        DT_UP: 'desc',
-      },
-    };
+  async getAllAnswers(query: FindManyAnswersDto, idUser: string) {
+    const { page = 0, limit = 10, search, DT_IN, DT_FM, ID_CT } = query;
+
+    const whereClauses = [Prisma.sql`u."ID_USER" != '1343'`];
+
+    if (search) {
+      whereClauses.push(Prisma.sql`(a."RESPONSE" ILIKE ${'%' + search + '%'})`);
+    }
+
+    if (DT_IN) {
+      whereClauses.push(Prisma.sql`a."DT_CR" >= ${DT_IN}`);
+    }
+
+    if (DT_FM) {
+      whereClauses.push(Prisma.sql`a."DT_CR" <= ${DT_FM}`);
+    }
+
+    if (ID_CT) {
+      whereClauses.push(Prisma.sql`c."ID_CT" = ${ID_CT}`);
+    }
+
+    const where = Prisma.sql`WHERE ${Prisma.join(whereClauses, ` AND `)}`;
+    const results = await this.prismaService.$queryRaw<
+      Array<{
+        ID_AN: string;
+        RESPONSE: string;
+        DT_CR: Date;
+        DT_UP: Date;
+        DEL_AT: Date | null;
+        USERNAME: string;
+        ROLE: string;
+        TITLE: string;
+        CATEGORY: string;
+        likes: number;
+        dislikes: number;
+        user_vote: 'LIKE' | 'DESLIKE' | null;
+        dt_up_user: Date;
+      }>
+    >(
+      Prisma.sql`
+      SELECT
+          a."ID_AN",
+          a."ID_QT",
+          a."RESPONSE",
+          a."DT_CR",
+          a."DT_UP",
+          a."DEL_AT",
+          u."USERNAME",
+          u."ID_USER",
+          u."ROLE",
+          u."DT_UP" AS dt_up_user,
+          q."TITLE",
+          c."CATEGORY",
+          CAST(COUNT(CASE WHEN v."TYPE" = 'LIKE' THEN 1 END) AS INT) AS likes,
+          CAST(COUNT(CASE WHEN v."TYPE" = 'DESLIKE' THEN 1 END) AS INT) AS dislikes,
+          uv."TYPE" AS user_vote
+      FROM "ANSWERS" a
+      JOIN "USERS" u ON u."ID_USER" = a."ID_USER"
+      JOIN "QUESTIONS" q ON q."ID_QT" = a."ID_QT"
+      JOIN "CATEGORIES" c ON c."ID_CT" = q."ID_CT"
+      LEFT JOIN "VOTES" v ON v."ID_AN" = a."ID_AN"
+      LEFT JOIN "VOTES" uv ON uv."ID_AN" = a."ID_AN" AND uv."ID_USER" = ${idUser ?? null}
+      ${where}
+      GROUP BY
+          a."ID_AN",
+          u."ID_USER",
+          u."USERNAME",
+          u."ROLE",
+          q."TITLE",
+          c."CATEGORY",
+          uv."TYPE"
+      ORDER BY
+        a."DT_CR" DESC
+      OFFSET ${page * limit}
+      LIMIT ${limit};
+    `,
+    );
 
     const total = await this.prismaService.answer.count();
-    const _data = await this.prismaService.answer.findMany(qry);
 
     return {
-      _data,
+      _data: results,
       _meta: {
-        _results: _data.length,
+        _results: results.length,
         _total_results: total,
         _page: page + 1,
         _total_page: Math.ceil(total / limit),
@@ -107,6 +161,8 @@ export class PrismaAnswersRepository {
         likes: number;
         dislikes: number;
         user_vote: 'LIKE' | 'DESLIKE' | null;
+        dt_up_user: Date;
+        del_at_user: Date | null;
       }>
     >(Prisma.sql`
       SELECT
@@ -176,6 +232,8 @@ export class PrismaAnswersRepository {
         likes: number;
         dislikes: number;
         user_vote: 'LIKE' | 'DESLIKE' | null;
+        dt_up_user: Date;
+        del_at_user: Date | null;
       }>
     >(
       Prisma.sql`

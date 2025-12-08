@@ -49,15 +49,18 @@ export class AnswerResponse {
   @ApiProperty({ example: 'Pesquisa' })
   RESPONSE: string;
 
+  @ApiProperty({ type: VoteModel })
   VOTES: VoteModel[];
 
   @ApiProperty({ example: '2025-10-27T16:58:49.624Z' })
   DT_CR: Date;
 
   @ApiProperty({ example: null })
-  DT_AT: Date | null;
+  DEL_AT: Date | null;
 
+  @ApiProperty({ type: UserModel })
   User: UserModel;
 
+  @ApiProperty({ type: QuestionModel })
   Question: QuestionModel;
 }

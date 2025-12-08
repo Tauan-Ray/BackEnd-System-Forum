@@ -27,8 +27,8 @@ export class AnswersService {
     private readonly usersRepository: PrismaUserRepository,
   ) {}
 
-  async getAllAnswers(query: FindManyAnswersDto) {
-    const answers = await this.answersRepository.getAllAnswers(query);
+  async getAllAnswers(query: FindManyAnswersDto, idUser: string) {
+    const answers = await this.answersRepository.getAllAnswers(query, idUser);
 
     return answers;
   }
