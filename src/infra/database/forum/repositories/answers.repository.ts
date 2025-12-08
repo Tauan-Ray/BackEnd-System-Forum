@@ -52,7 +52,7 @@ export class PrismaAnswersRepository {
 
   async getAnswerById(id: string) {
     const answer = await this.prismaService.answer.findUnique({
-      where: { ID_AN: id, DEL_AT: null },
+      where: { ID_AN: id },
       select: {
         ID_AN: true,
         ID_USER: true,
@@ -349,5 +349,12 @@ export class PrismaAnswersRepository {
     }
 
     return { likes, dislikes };
+  }
+
+  async restoreAnswer(ID_AN: string) {
+    await this.prismaService.answer.update({
+      where: { ID_AN },
+      data: { DEL_AT: null },
+    });
   }
 }

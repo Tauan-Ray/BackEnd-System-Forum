@@ -6,3 +6,4 @@ export * from './deleteAnswerResponse.dto';
 export * from './updateVotesResponse.dto';
 export * from './getVotesByAnswerResponse.dto';
 export * from './getAllVotesUserResponse.dto';
+export * from './restoreAnswerResponse.dto';

@@ -87,10 +87,10 @@ export class QuestionsService {
   }
 
   async restoreQuestion(id: string) {
-    const existingUser = await this.questionsRepository.getQuestionById(id);
-    if (!existingUser) throw new NotFoundException('Usuário não encontrado');
+    const existingQuestion = await this.questionsRepository.getQuestionById(id);
+    if (!existingQuestion) throw new NotFoundException('Pergunta não encontrada');
 
-    if (!existingUser.DEL_AT)
+    if (!existingQuestion.DEL_AT)
       throw new UnprocessableEntityException('A pergunta não está com o status de deletado');
 
     await this.questionsRepository.restoreQuestion(id);

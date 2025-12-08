@@ -26,6 +26,7 @@ import {
   ApiGetAnswerByIdUser,
   ApiGetAnswerByQuestion,
   ApiGetVotesByAnswer,
+  ApiRestoreAnswer,
   ApiUpdateAnswer,
   ApiUpdateVotes,
 } from 'src/common/decorators/swagger/answers';
@@ -131,12 +132,19 @@ export class AnswersController {
     return votesByAnswer;
   }
 
-  @Get('user/:id/vote')
+  @Get('/user/vote')
   @UseGuards(JwtGuard)
   @ApiGetAllVotesUser()
   async getAllVotesUser(@GetCurrentUser('payload') user: userPayload) {
     const allVotesUser = await this.answersService.getAllVotesUser(user.sub);
 
     return allVotesUser;
+  }
+
+  @Get('/restore/:id/')
+  @RouteAdmin()
+  @ApiRestoreAnswer()
+  async restoreAnswer(@Param() idAnswer: GetIdParamDto) {
+    return await this.answersService.restoreAnswer(idAnswer.id);
   }
 }

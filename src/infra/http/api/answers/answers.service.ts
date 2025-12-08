@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import {
   PrismaAnswersRepository,
   PrismaQuestionsRepository,
@@ -106,5 +111,19 @@ export class AnswersService {
     const votesByUser = await this.answersRepository.getAllVotesByUser(idUser);
 
     return votesByUser;
+  }
+
+  async restoreAnswer(idAnswer: string) {
+    const existingAnswer = await this.answersRepository.getAnswerById(idAnswer);
+
+    if (!existingAnswer) throw new NotFoundException('Resposta não encontrada');
+    if (!existingAnswer.DEL_AT)
+      throw new UnprocessableEntityException('A pergunta não está com o status de deletada');
+
+    await this.answersRepository.restoreAnswer(idAnswer);
+
+    return {
+      message: 'Resposta restaurada com sucesso',
+    };
   }
 }
