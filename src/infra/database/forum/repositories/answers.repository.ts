@@ -14,7 +14,7 @@ export class PrismaAnswersRepository {
   constructor(private readonly prismaService: PrismaForumService) {}
 
   async getAllAnswers(query: FindManyAnswersDto, idUser: string) {
-    const { page = 0, limit = 10, search, DT_IN, DT_FM, ID_CT } = query;
+    const { page = 0, limit = 10, search, DT_IN, DT_FM, ID_CT, EMAIL, USERNAME } = query;
 
     const whereClauses = [Prisma.sql`u."ID_USER" != '1343'`];
 
@@ -32,6 +32,14 @@ export class PrismaAnswersRepository {
 
     if (ID_CT) {
       whereClauses.push(Prisma.sql`c."ID_CT" = ${ID_CT}`);
+    }
+
+    if (EMAIL) {
+      whereClauses.push(Prisma.sql`(u."EMAIL" ILIKE ${'%' + EMAIL + '%'})`);
+    }
+
+    if (USERNAME) {
+      whereClauses.push(Prisma.sql`(u."USERNAME" ILIKE ${'%' + USERNAME + '%'})`);
     }
 
     const where = Prisma.sql`WHERE ${Prisma.join(whereClauses, ` AND `)}`;

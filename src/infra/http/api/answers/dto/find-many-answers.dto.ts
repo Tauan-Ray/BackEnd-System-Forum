@@ -20,6 +20,22 @@ export class FindManyAnswersDto {
   ID_CT?: string;
 
   @ApiPropertyOptional({
+    example: 'tauan@example.com',
+    description: 'Filtra pelo email do usuário',
+  })
+  @IsOptional()
+  @IsString()
+  EMAIL?: string;
+
+  @ApiPropertyOptional({
+    example: '_tauankk',
+    description: 'Filtra pelo username do usuário',
+  })
+  @IsOptional()
+  @IsString()
+  USERNAME?: string;
+
+  @ApiPropertyOptional({
     example: '2025-11-01T00:00:00Z',
     description: 'Data inicial para filtrar respostas',
   })
@@ -36,6 +52,7 @@ export class FindManyAnswersDto {
   @Transform(({ value }) => (value ? new Date(value) : null))
   @IsDate()
   DT_FM?: Date;
+
   @ApiPropertyOptional({
     example: 1,
     description: 'Página atual (paginação)',
