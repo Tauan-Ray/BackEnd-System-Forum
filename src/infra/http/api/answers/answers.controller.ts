@@ -144,7 +144,7 @@ export class AnswersController {
     return allVotesUser;
   }
 
-  @Get('/restore/:id/')
+  @Patch('/restore/:id/')
   @RouteAdmin()
   @ApiRestoreAnswer()
   async restoreAnswer(@Param() idAnswer: GetIdParamDto) {
