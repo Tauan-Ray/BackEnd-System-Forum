@@ -395,6 +395,7 @@ export class PrismaAnswersRepository {
     const result = await this.prismaService.answer.findMany({
       where: {
         ID_USER: idUser,
+        DEL_AT: null,
       },
       select: {
         VOTES: {

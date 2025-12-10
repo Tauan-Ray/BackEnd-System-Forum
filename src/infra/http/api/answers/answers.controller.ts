@@ -135,11 +135,11 @@ export class AnswersController {
     return votesByAnswer;
   }
 
-  @Get('/user/vote')
+  @Get('/votes/user/:id')
   @UseGuards(JwtGuard)
   @ApiGetAllVotesUser()
-  async getAllVotesUser(@GetCurrentUser('payload') user: userPayload) {
-    const allVotesUser = await this.answersService.getAllVotesUser(user.sub);
+  async getAllVotesUser(@Param() idUser: GetIdParamDto) {
+    const allVotesUser = await this.answersService.getAllVotesUser(idUser.id);
 
     return allVotesUser;
   }
