@@ -14,7 +14,6 @@ export function ApiCreateCategory() {
       type: CreateCategoryResponseDto,
     }),
     ApiResponse({ status: 400, description: 'Dados fornecidos inválidos' }),
-    ApiResponse({ status: 404, description: 'Nenhuma categoria encontrado' }),
     ApiResponse({ status: 409, description: 'Categoria com o mesmo nome já existente' }),
   );
 }
