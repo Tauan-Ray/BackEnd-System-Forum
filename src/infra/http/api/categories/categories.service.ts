@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaCategoryRespository } from 'src/infra/database/forum/repositories/category.repository';
 import { CreateCategoryDto, FindManyCategoriesDto } from './dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -51,5 +56,19 @@ export class CategoriesService {
     await this.categoryRepository.deleteCategory(id);
 
     return { message: 'Categoria deletada com sucesso' };
+  }
+
+  async restoreCategory(id: string) {
+    const existingCategory = await this.categoryRepository.getCategoryById(id);
+    if (!existingCategory) throw new NotFoundException('Categoria não encontrada');
+
+    if (!existingCategory.DEL_AT)
+      throw new UnprocessableEntityException('A categoria não está com o status de deletado');
+
+    await this.categoryRepository.restoreCategory(id);
+
+    return {
+      message: 'Categoria restaurada com sucesso',
+    };
   }
 }

@@ -116,4 +116,11 @@ export class PrismaCategoryRespository {
       },
     });
   }
+
+  async restoreCategory(ID_CT: string) {
+    await this.prismaService.category.update({
+      where: { ID_CT },
+      data: { DEL_AT: null },
+    });
+  }
 }

@@ -11,6 +11,7 @@ import {
   ApiDeleteCategory,
   ApiGetAllCategories,
   ApiGetCategoryById,
+  ApiRestoreCategory,
   ApiUpdateCategory,
 } from 'src/common/decorators/swagger/categories';
 import { ApiForbiddenResponse } from 'src/common/decorators/swagger/api-forbiddenResponse.decorator';
@@ -43,7 +44,7 @@ export class CategoriesController {
     return await this.categoriesService.createCategory(createCategory);
   }
 
-  @Patch('update/:id')
+  @Patch('/update/:id')
   @RouteAdmin()
   @UseGuards(JwtGuard)
   @ApiUpdateCategory()
@@ -54,11 +55,18 @@ export class CategoriesController {
     return await this.categoriesService.updateCategory(categoryId.id, updateCategory);
   }
 
-  @Patch('delete/:id')
+  @Patch('/delete/:id')
   @RouteAdmin()
   @UseGuards(JwtGuard)
   @ApiDeleteCategory()
   async deleteCategory(@Param() categoryId: getCategoryIdDto) {
     return await this.categoriesService.deleteCategory(categoryId.id);
+  }
+
+  @Patch('/restore/:id')
+  @ApiBearerAuth()
+  @ApiRestoreCategory()
+  async restoreCategory(@Param() id: getCategoryIdDto) {
+    return await this.categoriesService.restoreCategory(id.id);
   }
 }
