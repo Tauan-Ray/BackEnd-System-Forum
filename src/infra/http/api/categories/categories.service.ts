@@ -1,14 +1,14 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaCategoryRespository } from 'src/infra/database/forum/repositories/category.repository';
-import { CreateCategoryDto } from './dto';
+import { CreateCategoryDto, FindManyCategoriesDto } from './dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
   constructor(private readonly categoryRepository: PrismaCategoryRespository) {}
 
-  async getAllCategories() {
-    const allCategories = await this.categoryRepository.getAllCategories();
+  async getAllCategories(query: FindManyCategoriesDto) {
+    const allCategories = await this.categoryRepository.getAllCategories(query, false);
 
     return allCategories;
   }

@@ -42,7 +42,7 @@ describe('CategoriesController - getAllCategories', () => {
 
     mockService.getAllCategories.mockResolvedValue(categories);
 
-    const result = await controller.getAllCategories();
+    const result = await controller.getAllCategories({});
 
     expect(mockService.getAllCategories).toHaveBeenCalledTimes(1);
     expect(result).toEqual(categories);

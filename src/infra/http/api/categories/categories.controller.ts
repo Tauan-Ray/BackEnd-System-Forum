@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtGuard } from 'src/common/guards';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto';
+import { CreateCategoryDto, FindManyCategoriesDto } from './dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { RouteAdmin } from 'src/common/decorators/admin.decorator';
 import { getCategoryIdDto } from './dto/get-category-id.dto';
@@ -25,8 +25,8 @@ export class CategoriesController {
 
   @Get('/all')
   @ApiGetAllCategories()
-  async getAllCategories() {
-    return await this.categoriesService.getAllCategories();
+  async getAllCategories(@Query() query: FindManyCategoriesDto) {
+    return await this.categoriesService.getAllCategories(query);
   }
 
   @Get('/find')
